@@ -26,3 +26,6 @@ static/*
 # Ignore IDE specific files
 .vscode/
 .idea/
+
+# Ignore virtual environment folder
+venv/

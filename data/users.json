@@ -1,0 +1,20 @@
+{
+    "mtcoughlan@gmail.com": {
+        "password": "scrypt:32768:8:1$sndevx1WJoiqOeBD$61c6e59dae9f02aab6e09d5ed2a7bc63caa49d555a0a2b6d0986a3ee09fcc7b71bfe709b9b32e0afff94f85113eee161b7a47e797d3137e57ada6d968587de88",
+        "name": "Michael Coughlan",
+        "created_at": "2025-04-12T11:01:41.083515",
+        "reports": [
+            "54920715-6895-4bb8-b7f9-18255771933b",
+            "6b924a1d-a2e1-44c4-8128-8d609b7d01c2"
+        ]
+    },
+    "mtcodughlan@gmail.com": {
+        "password": "scrypt:32768:8:1$EaEfSdi3uAPvc4rP$2b3175ed2b5d0c0ff3442242dd39c8dcf00975b08cc4da15e38d8e393109ef4ccbe89e2aca7cb0b7de474caa8708a90a36a920a09108cd8cf2f6a4f8444be88f",
+        "name": "Michael Coughlan",
+        "created_at": "2025-04-12T11:24:20.963229",
+        "reports": [
+            "3ad9e850-e737-4cee-b71d-c6b11efb1aeb",
+            "3ba66092-e724-4b5d-9754-f166014150d7"
+        ]
+    }
+}

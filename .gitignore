@@ -1,0 +1,28 @@
+# Ignore Python cache files and folders
+__pycache__/
+*.pyc
+
+# Ignore database files
+instance/*.db
+
+# Ignore logs
+logs/*.log
+
+# Ignore uploads
+uploads/*
+
+# Ignore reports
+reports/*.json
+
+# Ignore zip files
+*.zip
+
+# Ignore static files
+static/*
+
+# Ignore environment files
+.env
+
+# Ignore IDE specific files
+.vscode/
+.idea/

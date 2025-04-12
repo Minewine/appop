@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="{{ lang | default('en') }}"> <!-- Lang attribute set by Flask -->
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n="Response Page">Analysis Results</title> <!-- Title set by JS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* --- Base & Reset (Consistent with other pages) --- */
+    :root {
+      --primary-dark: #1e3a8a;
+      --primary-light: #2563eb;
+      --accent-green: #10b981;
+      --accent-green-dark: #059669;
+      --neutral-bg-light: #f8f9fa;
+      --neutral-bg-white: #ffffff;
+      --neutral-border: #e9ecef;
+      --neutral-border-input: #d1d5db;
+      --text-dark: #1f2937;
+      --text-medium: #343a40;
+      --text-light: #6c757d;
+      --text-white: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.07);
+      --shadow-color-hover: rgba(0, 0, 0, 0.1);
+      --shadow-color-button-secondary: rgba(0, 0, 0, 0.05); /* For secondary button */
+      --shadow-color-button-secondary-hover: rgba(0, 0, 0, 0.08);
+      --error-color: #b91c1c; /* Darker Red */
+      --error-bg: #fee2e2; /* Lighter Red bg */
+      --error-border: #fecaca;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--neutral-bg-light);
+      color: var(--text-medium);
+      line-height: 1.7;
+      overflow-x: hidden;
+      font-weight: 400;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* --- Simplified Header (Consistent with upload.html) --- */
+     .page-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+        padding: 1rem 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .page-header a.logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-white);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+         text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+
+    /* --- Main Content Area --- */
+    main {
+        flex-grow: 1; /* Pushes footer down */
+        padding: 3rem 0 4rem; /* Adjusted padding */
+    }
+    /* Wider container suitable for displaying results */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+
+    h1.page-title { /* Specific class for the main page title */
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      color: var(--text-dark);
+      text-align: center;
+    }
+
+    /* --- Error Message Styling --- */
+    .error-message {
+        background-color: var(--error-bg);
+        color: var(--error-color);
+        border: 1px solid var(--error-border);
+        padding: 1.25rem 1.5rem; /* Adjusted padding */
+        border-radius: 8px;
+        margin: 0 auto 2.5rem auto; /* Centered with bottom margin */
+        text-align: center;
+        font-weight: 500;
+        max-width: 700px; /* Limit width */
+        display: flex; /* Align icon and text */
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .error-message i {
+        font-size: 1.2rem;
+        flex-shrink: 0; /* Prevent icon shrinking */
+    }
+
+    /* --- Response Content Styling --- */
+    .response-container {
+        background-color: var(--neutral-bg-white);
+        padding: 2rem 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px var(--shadow-color);
+        border: 1px solid var(--neutral-border);
+        /* Prevent overly long lines of text */
+        /* max-width: 80ch; */ /* Optional: Limit text width for readability */
+        margin: 0 auto; /* Center if using max-width */
+    }
+
+    /* Styling for elements generated from Markdown within response-content */
+    .response-content > *:first-child { margin-top: 0; } /* Remove top margin from first element */
+    .response-content > *:last-child { margin-bottom: 0; } /* Remove bottom margin from last element */
+
+    .response-content h1, /* Handle H1s if the LLM uses them */
+    .response-content h2 { /* Corresponds to # or ## */
+        font-size: clamp(1.4rem, 3vw, 1.7rem);
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-top: 2.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--neutral-border);
+        text-align: left;
+    }
+     .response-content h3 { /* Corresponds to ### */
+        font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-top: 1.75rem;
+        margin-bottom: 0.75rem;
+        text-align: left;
+    }
+     .response-content h4 { /* Corresponds to #### */
+        font-size: clamp(1.05rem, 2vw, 1.15rem);
+        font-weight: 600;
+        color: var(--text-medium);
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        text-align: left;
+    }
+     .response-content p {
+        margin-bottom: 1.1rem;
+        color: var(--text-medium);
+        line-height: 1.7;
+    }
+     .response-content ul,
+     .response-content ol {
+        padding-left: 1.75rem; /* Adjusted padding */
+        margin-bottom: 1.1rem;
+    }
+     .response-content li {
+        margin-bottom: 0.6rem; /* Spacing between list items */
+    }
+     .response-content li::marker { /* Style list markers if desired */
+        color: var(--primary-light);
+        font-weight: 600;
+     }
+     .response-content strong {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+     .response-content em { /* Italic text */
+        font-style: italic;
+        color: var(--text-medium); /* Optional: slightly different color */
+     }
+     .response-content code { /* Inline code */
+        background-color: var(--neutral-bg-light);
+        border: 1px solid var(--neutral-border);
+        padding: 0.2em 0.5em;
+        margin: 0 0.1em;
+        font-size: 90%;
+        border-radius: 4px;
+        font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        color: var(--primary-dark);
+    }
+     .response-content pre { /* Code blocks */
+        background-color: var(--neutral-bg-light);
+        border: 1px solid var(--neutral-border);
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--text-dark);
+     }
+     .response-content pre code { /* Reset inline style within code block */
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font-size: inherit;
+        border-radius: 0;
+        color: inherit;
+        font-family: inherit;
+     }
+     .response-content blockquote {
+        border-left: 4px solid var(--primary-light);
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        color: var(--text-light);
+        font-style: italic;
+     }
+
+    /* Table Styling */
+    .response-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0; /* Consistent margin */
+        font-size: 0.95rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        border-radius: 8px;
+        overflow: hidden; /* Clip shadow/borders */
+        border: 1px solid var(--neutral-border);
+    }
+    .response-content th,
+    .response-content td {
+        border: 1px solid var(--neutral-border);
+        padding: 0.8rem 1rem;
+        text-align: left;
+        vertical-align: top;
+    }
+    .response-content th {
+        background-color: var(--neutral-bg-light);
+        font-weight: 600;
+        color: var(--text-dark);
+        white-space: nowrap; /* Prevent headers wrapping if possible */
+    }
+    /* Removed striping for cleaner look, but can be added back */
+    /* .response-content tr:nth-child(even) { background-color: #fdfdff; } */
+    /* .response-content tr:hover { background-color: #f5f7ff; } */
+
+    /* --- Start Over Button --- */
+    .start-over-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+    .start-over-button {
+      /* Reuse secondary button style */
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-flex; /* Use flex for icon alignment */
+      align-items: center;
+      gap: 0.5rem; /* Space between icon and text */
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      min-width: 200px;
+
+      background-color: var(--neutral-bg-white);
+      color: var(--primary-light);
+      border: 1px solid var(--neutral-border-input);
+      box-shadow: 0 4px 10px var(--shadow-color-button-secondary);
+    }
+    .start-over-button i {
+        font-size: 0.9em; /* Slightly smaller icon */
+    }
+    .start-over-button:hover {
+      background-color: var(--neutral-bg-light);
+      border-color: #adb5bd;
+      transform: translateY(-2px); /* Slightly less lift */
+      box-shadow: 0 6px 15px var(--shadow-color-button-secondary-hover);
+    }
+
+    /* --- Footer (Consistent with other pages) --- */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: auto; /* Pushes footer down with flexbox */
+      border-top: 1px solid var(--neutral-border);
+      background-color: var(--neutral-bg-white);
+    }
+
+     /* --- Responsive Adjustments --- */
+    @media (max-width: 768px) {
+        .container { max-width: 100%; padding: 0 1rem; }
+        main { padding: 2rem 0 3rem; }
+        h1.page-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
+        .response-container { padding: 1.5rem; }
+        .response-content h1, .response-content h2 { font-size: 1.4rem; margin-top: 1.75rem; }
+        .response-content h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+        .response-content table { font-size: 0.9rem; display: block; overflow-x: auto; white-space: nowrap;} /* Make table horizontally scrollable */
+        .response-content th, .response-content td { padding: 0.6rem 0.8rem; white-space: normal; } /* Allow cell content to wrap */
+         .response-content th { white-space: normal; } /* Allow headers to wrap too */
+    }
+    @media (max-width: 480px) {
+        h1.page-title { font-size: 1.6rem; }
+        .response-container { padding: 1rem; }
+        .response-content h1, .response-content h2 { font-size: 1.3rem; }
+        .response-content h3 { font-size: 1.1rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Simple Header -->
+   <header class="page-header">
+      <!-- Link back to upload page with current lang -->
+      <a href="{{ url_for('upload_route', lang=lang) }}" class="logo" data-i18n="The Metric">The Metric</a>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <h1 class="page-title" data-i18n="results.title">Analysis Results</h1>
+
+       <!-- Display Error Message if present -->
+       {% if error %}
+       <div class="error-message">
+           <i class="fa-solid fa-circle-exclamation"></i>
+           <span><strong data-i18n="error.prefix">Error:</strong> {{ error }}</span>
+       </div>
+       {% endif %}
+
+
+      <!-- Only show response container if there's no error and a response exists -->
+      {% if not error and response %}
+      <div class="response-container">
+        <div class="response-content">
+            <!-- Render the HTML generated from Markdown -->
+            {{ response | safe }}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Button to go back to upload page -->
+      <div class="start-over-container">
+          <a href="{{ url_for('upload_route', lang=lang) }}" class="start-over-button" data-i18n="start.over">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Start New Analysis</span> <!-- Text inside span for better i18n handling -->
+          </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      © <span id="current-year">2024</span> <span data-i18n="The Metric">The Metric</span>. <span data-i18n="footer.rights">All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    // --- Translations Object ---
+    const translations = {
+       en: {
+        "Response Page": "Analysis Results",
+        "The Metric": "The Metric",
+        "results.title": "Analysis Results",
+        "error.prefix": "Error:",
+        "start.over": "Start New Analysis", // Key for the button text
+        "footer.rights": "All rights reserved."
+      },
+      fr: {
+        "Response Page": "Résultats de l'Analyse",
+        "The Metric": "Le Metric",
+        "results.title": "Résultats de l'Analyse",
+        "error.prefix": "Erreur :",
+        "start.over": "Nouvelle Analyse", // Key for the button text
+        "footer.rights": "Tous droits réservés."
+      }
+    };
+
+     // --- Set Current Year in Footer ---
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+
+    // --- Initial Language Load (for static elements) ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let initialLang = urlParams.get('lang') || 'en';
+      if (!translations[initialLang]) { initialLang = 'en'; }
+
+      console.log("Response page initial language:", initialLang);
+
+      document.documentElement.lang = initialLang;
+      const dictionary = translations[initialLang];
+      const defaultDictionary = translations['en'];
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        let text = dictionary ? dictionary[key] : undefined;
+        if (text === undefined && defaultDictionary) { text = defaultDictionary[key]; }
+        if (text === undefined) {
+            // Handle specific cases like the button text being inside a span
+            const textSpan = el.querySelector('span:not([id])'); // Find span that isn't the year
+             if (textSpan) {
+                text = textSpan.textContent;
+             } else {
+                text = el.textContent.replace(/©\s*\d{4}\s*/, '').trim(); // Try to get text excluding copyright
+             }
+        }
+
+        if (el.tagName === 'TITLE') { document.title = text; }
+        else {
+            // If the element is the button link, update the span inside it
+            const textSpan = el.querySelector('span:not([id])');
+             if (textSpan && el.classList.contains('start-over-button')) {
+                 textSpan.textContent = text;
+             }
+             // Handle error prefix specifically if needed, otherwise update text content
+             else if (key === 'error.prefix' && el.tagName === 'STRONG') {
+                 el.textContent = text;
+             }
+              // Update other elements directly
+             else if (el.tagName !== 'SPAN' || (el.id && el.id === 'current-year')) { // Avoid overwriting year/logo spans accidentally
+                // Only update if it's not just a wrapper span like in the error message
+                if (!el.querySelector('[data-i18n]')) { // Avoid double-setting on nested elements
+                     el.textContent = text;
+                }
+             }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

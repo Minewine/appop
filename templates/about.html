@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - AppOp Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">AppOp Demo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('analysis.upload') }}">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('main.about') }}">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="bg-light p-5 rounded">
+            <h1>About AppOp Demo</h1>
+            <hr class="my-4">
+            <p class="lead">AppOp Demo is an AI-powered CV analysis and optimization tool designed to help job seekers improve their resumes and increase their chances of getting interviews.</p>
+            
+            <h2 class="mt-4">Features</h2>
+            <ul class="list-group mt-3 mb-4">
+                <li class="list-group-item">PDF CV/Resume Analysis</li>
+                <li class="list-group-item">ATS (Applicant Tracking System) Compatibility Check</li>
+                <li class="list-group-item">Job Description Matching Analysis</li>
+                <li class="list-group-item">Keyword Optimization Suggestions</li>
+                <li class="list-group-item">Content and Achievement Enhancement</li>
+            </ul>
+            
+            <h2 class="mt-4">How It Works</h2>
+            <ol class="lead">
+                <li>Upload your CV/Resume (PDF format)</li>
+                <li>Upload or paste a job description</li>
+                <li>Our AI analyzes both documents</li>
+                <li>Receive detailed feedback and suggestions</li>
+                <li>Improve your CV based on the recommendations</li>
+            </ol>
+            
+            <div class="mt-5">
+                <a class="btn btn-primary btn-lg" href="{{ url_for('analysis.upload') }}" role="button">Get Started</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </main>
+
+    <footer class="container mt-5">
+        <hr>
+        <p class="text-center text-muted">&copy; {{ current_year }} AppOp Demo</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

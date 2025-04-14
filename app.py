@@ -15,6 +15,7 @@ from markdown import markdown # For rendering Markdown to HTML
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Import configuration and blueprints
 from config import Config
@@ -28,9 +29,12 @@ load_dotenv() # Load variables from .env file
 
 # --- Flask App Setup ---
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/appop/static')  # Adjust static URL path
     app.config.from_object(config_class)
-    
+
+    # Set the script name for URL generation
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
+
     # Configure session to use filesystem
     app.config['SESSION_TYPE'] = 'filesystem'
     app.secret_key = app.config['SECRET_KEY']  # Make sure this is set in your config

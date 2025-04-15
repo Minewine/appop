@@ -127,6 +127,10 @@ def create_app(config_class=Config):
 app = create_app()
 application = app
 
+@app.route('/show_app_root')
+def show_app_root():
+    return f"app_root: {app.config.get('APPLICATION_ROOT', '/appop')}"
+
 # --- Main Execution Block ---
 if __name__ == '__main__':
     print(f"🚀 Starting Flask App...")

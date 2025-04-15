@@ -1,5 +1,5 @@
 # --- Imports --- 
-from flask import Flask, request, render_template, url_for, redirect, flash, jsonify, session
+from flask import Flask, request, render_template, url_for, redirect, flash, jsonify, session, current_app
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
@@ -91,7 +91,12 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp, url_prefix='/appop/auth')
     app.register_blueprint(analysis_bp, url_prefix='/appop')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
-    
+
+    # Add context processor to inject app_root into all templates
+    @app.context_processor
+    def inject_app_root():
+        return dict(app_root=app.config.get('APPLICATION_ROOT', '/appop'))
+
     # Error handlers
     @app.errorhandler(404)
     def page_not_found(e):

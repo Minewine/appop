@@ -8,8 +8,11 @@
             "6b924a1d-a2e1-44c4-8128-8d609b7d01c2",
             "b8861d61-d56c-4981-93be-32b2d8699617",
             "de6dba2b-9fba-4b08-9f0b-f2461290e238",
-            "be039ace-bcb4-473c-b778-608801f4a2b6"
-        ]
+            "be039ace-bcb4-473c-b778-608801f4a2b6",
+            "10f5bc65-6630-45f2-b448-b05b5416098f",
+            "30cbeb3f-e9c3-4f15-9f82-e0568feeff97"
+        ],
+        "role": "user"
     },
     "mtcodughlan@gmail.com": {
         "password": "scrypt:32768:8:1$EaEfSdi3uAPvc4rP$2b3175ed2b5d0c0ff3442242dd39c8dcf00975b08cc4da15e38d8e393109ef4ccbe89e2aca7cb0b7de474caa8708a90a36a920a09108cd8cf2f6a4f8444be88f",
@@ -18,7 +21,8 @@
         "reports": [
             "3ad9e850-e737-4cee-b71d-c6b11efb1aeb",
             "3ba66092-e724-4b5d-9754-f166014150d7"
-        ]
+        ],
+        "role": "user"
     },
     "asd@asd.com": {
         "password": "scrypt:32768:8:1$TbUt8ilKIYDX3Xda$1c7ffa1996517e589e9dd0872261a0f60716854f7670a26dc84c8c83efe12e42e23cff47addb1fa0ee650d4d019cb34d0d30b2112e9261a8c9c66834f5a4522a",
@@ -26,6 +30,13 @@
         "created_at": "2025-04-15T06:33:26.534365",
         "reports": [
             "2684724b-b36c-4eda-93a9-3687ba1b6c3a"
-        ]
+        ],
+        "role": "user"
+    },
+    "asd@asdasd.com": {
+        "password": "scrypt:32768:8:1$TpgC6XCVF32NRL2C$cd2270f13e9811ed8c7b01aef3d545806a7b689ac13655736d2cb5e27e8d2cd6f45c31553373c1f386ff61f1765bbf58cfe4289f398af801ef602f5d6ea8eaa1",
+        "name": "zxcv<",
+        "created_at": "2025-04-15T07:37:14.092682",
+        "reports": []
     }
 }

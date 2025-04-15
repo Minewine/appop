@@ -1,0 +1,9 @@
+PassengerAppEnv production
+PassengerPython /home/ramemvpl/virtualenv/public_html/appop/3.9/bin/python
+PassengerAppRoot /home/ramemvpl/public_html/appop
+PassengerStartupFile passenger_wsgi.py
+
+# Optional: Serve static files directly (uncomment if needed)
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteRule ^(.*)$ /appop/passenger_wsgi.py/$1 [QSA,PT,L]

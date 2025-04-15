@@ -1,0 +1,15 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Caching
+Flask-Limiter
+python-dotenv
+PyMuPDF
+requests
+markdown
+alembic
+werkzeug
+itsdangerous
+Jinja2
+click
+typing-extensions>=4.12

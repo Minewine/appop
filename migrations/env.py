@@ -4,6 +4,7 @@ from logging.config import fileConfig
 from flask import current_app
 
 from alembic import context
+from app import app
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -110,4 +111,5 @@ def run_migrations_online():
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    with app.app_context():
+        run_migrations_online()

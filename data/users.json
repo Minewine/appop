@@ -19,5 +19,13 @@
             "3ad9e850-e737-4cee-b71d-c6b11efb1aeb",
             "3ba66092-e724-4b5d-9754-f166014150d7"
         ]
+    },
+    "asd@asd.com": {
+        "password": "scrypt:32768:8:1$TbUt8ilKIYDX3Xda$1c7ffa1996517e589e9dd0872261a0f60716854f7670a26dc84c8c83efe12e42e23cff47addb1fa0ee650d4d019cb34d0d30b2112e9261a8c9c66834f5a4522a",
+        "name": "asd asd",
+        "created_at": "2025-04-15T06:33:26.534365",
+        "reports": [
+            "2684724b-b36c-4eda-93a9-3687ba1b6c3a"
+        ]
     }
 }

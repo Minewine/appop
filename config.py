@@ -89,7 +89,7 @@ class Config:
     # PDF processing settings
     PDF_EXTRACT_IMAGES = False
     PDF_OCR_ENABLED = False  # Enable if you add OCR capability
-    APPLICATION_ROOT = os.getenv('APPLICATION_ROOT', '/')
+    APPLICATION_ROOT = '/appop'
 
 # Prompt templates
 # English Version

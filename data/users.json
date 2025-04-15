@@ -38,5 +38,11 @@
         "name": "zxcv<",
         "created_at": "2025-04-15T07:37:14.092682",
         "reports": []
+    },
+    "zxcv@zv.com": {
+        "password": "scrypt:32768:8:1$eBDZbCfd0P4QOgWy$f2edef4f650b4da41fa3b536e97b234e96a6b67cdb782e5f8a7032327cfb52fdaba4a5a607c52b65a4be00abd3d186903b02616d4dd7f7de8ca3ffc5bf695e9e",
+        "name": "xcvbxcvb",
+        "created_at": "2025-04-15T07:44:33.903556",
+        "reports": []
     }
 }

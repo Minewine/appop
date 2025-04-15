@@ -48,7 +48,8 @@ def migrate_json_to_db(app):
                             name=user_data.get('name', ''),
                             password_hash=user_data.get('password'),
                             created_at=datetime.fromisoformat(user_data.get('created_at')),
-                            role = user_data.get('role') or 'user'
+                            role=user_data.get('role', 'user'),
+                            status=user_data.get('status', 'active')  # <-- add this line
                         )
                         db.session.add(user)
             db.session.commit()

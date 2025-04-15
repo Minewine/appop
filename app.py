@@ -16,6 +16,7 @@ from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_migrate import Migrate
 
 # Import configuration and blueprints
 from config import Config
@@ -23,24 +24,28 @@ from services.pdf_service import extract_pdf_text
 from services.ai_service import query_openrouter
 from services.utils import allowed_file, generate_report_id
 from services.database import db, migrate_json_to_db
+from blueprints.analysis import analysis_bp
 
 # --- Load Environment Variables ---
 load_dotenv() # Load variables from .env file
 
 # --- Flask App Setup ---
+migrate = Migrate()
+
 def create_app(config_class=Config):
-    app = Flask(__name__, static_url_path='/appop/static')  # Adjust static URL path
+    app = Flask(__name__, static_url_path=f"{Config.APPLICATION_ROOT}/static")
     app.config.from_object(config_class)
+
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     # Set the script name for URL generation
     app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
     # Configure session to use filesystem
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.secret_key = app.config['SECRET_KEY']  # Make sure this is set in your config
-    
-    # Initialize database
-    db.init_app(app)
+    app.secret_key = app.config['SECRET_KEY']  # Ensure this is set in your config
     
     # Initialize cache
     cache = Cache(app)
@@ -79,13 +84,12 @@ def create_app(config_class=Config):
     
     # Register blueprints
     from blueprints.main import main_bp
-    from blueprints.analysis import analysis_bp
     from blueprints.dashboard import dashboard_bp
     from blueprints.auth import auth_bp
 
     app.register_blueprint(main_bp)
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(analysis_bp)
+    app.register_blueprint(auth_bp, url_prefix='/appop/auth')
+    app.register_blueprint(analysis_bp, url_prefix='/appop')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     
     # Error handlers

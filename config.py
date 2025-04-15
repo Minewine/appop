@@ -1,10 +1,10 @@
+from textwrap import dedent
 import os
-from textwrap import dedent  # Use textwrap.dedent instead of importing dedent directly
 
 class Config:
     """Configuration for the Flask application"""
     # Secret key for session security
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-key-for-testing-only-change-in-production')
+    SECRET_KEY = 'your-secret-key'  # Replace with a secure random key
     
     # Upload configurations
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -89,7 +89,7 @@ class Config:
     # PDF processing settings
     PDF_EXTRACT_IMAGES = False
     PDF_OCR_ENABLED = False  # Enable if you add OCR capability
-    APPLICATION_ROOT = '/appop'
+    APPLICATION_ROOT = os.getenv('APPLICATION_ROOT', '/')
 
 # Prompt templates
 # English Version
@@ -224,7 +224,7 @@ Analysez le CV du candidat fourni par rapport à la Description de Poste (DP) po
 
 **<Instructions de Formatage pour Votre Réponse :>**
 *   Utilisez du Markdown clair pour les titres, les puces et les tableaux.
-*   Assurez-vous que l'analyse est concise, directe et hautement exploitable.
+*   Assurez-vous que l'analyse est concise, directe, et hautement exploitable.
 *   Concentrez-vous sur les étapes pratiques que le candidat peut mettre en œuvre.
 
 **<Gestion de l'Ambiguïté :>**

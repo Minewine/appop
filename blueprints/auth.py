@@ -64,28 +64,32 @@ def login():
     # Get language preference from query param or session
     lang = request.args.get('lang', session.get('lang', 'en'))
     session['lang'] = lang
-    
+
     # If user is already logged in, redirect to destination
     if 'user_email' in session:
-        next_page = request.args.get('next', url_for('analysis.upload', lang=lang))
-        return redirect(next_page)
-    
+        next_page = request.args.get('next')
+        if next_page:
+            return redirect(next_page)
+        return redirect(url_for('analysis.upload', lang=lang))
+
     if request.method == 'POST':
         email = request.form.get('email', '').lower()
         password = request.form.get('password', '')
-        
+
         user = verify_user(email, password)
-        
+
         if user:
             # Store user information in session
             session['user_email'] = email
             session['user_name'] = user.get('name', '')
-            
+            current_app.logger.info(f"User logged in: {email}")
+
             next_page = request.args.get('next', url_for('analysis.upload', lang=lang))
             return redirect(next_page)
         else:
             flash('Invalid email or password. Please try again.', 'error')
-    
+            current_app.logger.warning(f"Failed login attempt for email: {email}")
+
     return render_template('auth/login.html', lang=lang)
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])

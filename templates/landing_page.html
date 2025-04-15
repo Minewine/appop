@@ -374,6 +374,9 @@
       }
     };
 
+    // --- Get app root from template context (set in Flask route) ---
+    const APP_ROOT = "{{ app_root|default('/') }}".replace(/\/+$/, '');
+
     // --- Language Switching Function ---
     function setLang(lang) {
       // **** Start Debugging Logs ****
@@ -446,7 +449,7 @@
     // --- Navigation Function for Upload Page ---
     function goToUploadPage() {
       const currentLang = localStorage.getItem('lang') || 'en';
-      const loginUrl = `/appop/auth/login?next=/upload&lang=${currentLang}`;
+      const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(APP_ROOT + '/upload')}&lang=${currentLang}`;
       window.location.href = loginUrl;
       console.log("Navigating to:", loginUrl); // Optional: for debugging
     }

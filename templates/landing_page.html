@@ -449,11 +449,20 @@
     // --- Navigation Function for Upload Page ---
     function goToUploadPage() {
       const currentLang = localStorage.getItem('lang') || 'en';
-      // In production, APP_ROOT will be empty, so we need to adjust the URL structure
-      const nextPath = APP_ROOT ? `${APP_ROOT}/analysis/upload` : '/analysis/upload';
+      // Fix for production vs development environments
+      let nextPath;
+      
+      if ('{{ is_passenger }}' === 'True') {
+        // In production, don't add /appop prefix as it's already added by the web server
+        nextPath = '/analysis/upload';
+      } else {
+        // In development, use the app_root prefix
+        nextPath = `${APP_ROOT}/analysis/upload`;
+      }
+      
       const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(nextPath)}&lang=${currentLang}`;
       window.location.href = loginUrl;
-      console.log("Navigating to:", loginUrl); // Optional: for debugging
+      console.log("Navigating to:", loginUrl); // For debugging
     }
 
     // --- Sticky CTA Logic ---

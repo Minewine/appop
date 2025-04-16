@@ -113,8 +113,9 @@ def create_app(config_class=Config):
     # Add context processor to inject app_root into all templates
     @app.context_processor
     def inject_app_root():
-        app_root = '' if is_running_under_passenger() else app.config.get('APPLICATION_ROOT', '/appop')
-        return dict(app_root=app_root)
+        is_passenger = is_running_under_passenger()
+        app_root = '' if is_passenger else app.config.get('APPLICATION_ROOT', '/appop')
+        return dict(app_root=app_root, is_passenger=is_passenger)
 
     # Error handlers
     @app.errorhandler(404)

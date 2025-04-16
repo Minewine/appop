@@ -92,12 +92,21 @@ def create_app(config_class=Config):
     from blueprints.dashboard import dashboard_bp
     from blueprints.auth import auth_bp
 
-    # Change from app_root with APPLICATION_ROOT prefix to empty string
-    app_root = '' if is_running_under_passenger() else app.config.get('APPLICATION_ROOT', '/appop')
-    app.register_blueprint(main_bp, url_prefix=app_root)
-    app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
-    app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
-    app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
+    # In production (Passenger), the web server adds /appop to all URLs
+    # In development, we need to add it ourselves
+    if is_running_under_passenger():
+        # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
+        app.register_blueprint(main_bp, url_prefix='')
+        app.register_blueprint(auth_bp, url_prefix='/auth')
+        app.register_blueprint(analysis_bp, url_prefix='/analysis')
+        app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    else:
+        # For development - explicitly include /appop prefix
+        app_root = app.config.get('APPLICATION_ROOT', '/appop')
+        app.register_blueprint(main_bp, url_prefix=app_root)
+        app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
+        app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
+        app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
     
     
 

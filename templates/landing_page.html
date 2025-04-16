@@ -449,7 +449,9 @@
     // --- Navigation Function for Upload Page ---
     function goToUploadPage() {
       const currentLang = localStorage.getItem('lang') || 'en';
-      const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(APP_ROOT + '/analysis/upload')}&lang=${currentLang}`;
+      // In production, APP_ROOT will be empty, so we need to adjust the URL structure
+      const nextPath = APP_ROOT ? `${APP_ROOT}/analysis/upload` : '/analysis/upload';
+      const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(nextPath)}&lang=${currentLang}`;
       window.location.href = loginUrl;
       console.log("Navigating to:", loginUrl); // Optional: for debugging
     }

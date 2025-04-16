@@ -17,8 +17,10 @@ def index():
     lang = request.args.get('lang', session.get('lang', 'en'))
     # Store language preference in session
     session['lang'] = lang
-    app_root = current_app.config.get('APPLICATION_ROOT', '/')
-    return render_template('landing_page.html', lang=lang, app_root=app_root)
+    
+    # The app_root is now injected by the context processor in app.py
+    # so we don't need to pass it explicitly here
+    return render_template('landing_page.html', lang=lang)
 
 @main_bp.route('/about')
 def about():

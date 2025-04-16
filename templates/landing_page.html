@@ -449,17 +449,12 @@
     // --- Navigation Function for Upload Page ---
     function goToUploadPage() {
       const currentLang = localStorage.getItem('lang') || 'en';
-      // Fix for production vs development environments
-      let nextPath;
       
-      if ('{{ is_passenger }}' === 'True') {
-        // In production, don't add /appop prefix as it's already added by the web server
-        nextPath = '/analysis/upload';
-      } else {
-        // In development, use the app_root prefix
-        nextPath = `${APP_ROOT}/analysis/upload`;
-      }
+      // IMPORTANT: In production, app_root is '', so explicitly use '/analysis/upload'
+      // rather than constructing with APP_ROOT which would be empty
+      const nextPath = '/analysis/upload';
       
+      // This will create the correct URL with or without Passenger
       const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(nextPath)}&lang=${currentLang}`;
       window.location.href = loginUrl;
       console.log("Navigating to:", loginUrl); // For debugging

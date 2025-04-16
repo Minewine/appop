@@ -450,14 +450,11 @@
     function goToUploadPage() {
       const currentLang = localStorage.getItem('lang') || 'en';
       
-      // IMPORTANT: In production, app_root is '', so explicitly use '/analysis/upload'
-      // rather than constructing with APP_ROOT which would be empty
-      const nextPath = '/analysis/upload';
-      
-      // This will create the correct URL with or without Passenger
-      const loginUrl = `${APP_ROOT}/auth/login?next=${encodeURIComponent(nextPath)}&lang=${currentLang}`;
-      window.location.href = loginUrl;
+      // Always use just '/appop' directly in the URL path for consistent behavior
+      // The auth route will handle proper redirects to 'next' after login
+      const loginUrl = '/appop/auth/login?next=%2Fappop%2Fanalysis%2Fupload&lang=' + currentLang;
       console.log("Navigating to:", loginUrl); // For debugging
+      window.location.href = loginUrl;
     }
 
     // --- Sticky CTA Logic ---

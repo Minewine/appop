@@ -87,10 +87,12 @@ def create_app(config_class=Config):
     from blueprints.dashboard import dashboard_bp
     from blueprints.auth import auth_bp
 
-    app.register_blueprint(main_bp)
-    app.register_blueprint(auth_bp, url_prefix='/appop/auth')
-    app.register_blueprint(analysis_bp, url_prefix='/appop')
-    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    app_root = app.config.get('APPLICATION_ROOT', '/appop')
+    app.register_blueprint(main_bp, url_prefix=app_root)
+    app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
+    app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
+    app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
+  
 
     # Add context processor to inject app_root into all templates
     @app.context_processor

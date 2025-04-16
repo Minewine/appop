@@ -4,7 +4,7 @@ import os
 class Config:
     """Configuration for the Flask application"""
     # Secret key for session security
-    SECRET_KEY = 'your-secret-key'  # Replace with a secure random key
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-for-development')
     
     # Upload configurations
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -89,7 +89,7 @@ class Config:
     # PDF processing settings
     PDF_EXTRACT_IMAGES = False
     PDF_OCR_ENABLED = False  # Enable if you add OCR capability
-    APPLICATION_ROOT = '/appop'
+    APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', '/appop')
 
 # Prompt templates
 # English Version

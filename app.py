@@ -29,6 +29,11 @@ from blueprints.analysis import analysis_bp
 # --- Load Environment Variables ---
 load_dotenv() # Load variables from .env file
 
+def is_running_under_passenger():
+    """Check if app is running under Passenger"""
+    return 'PASSENGER_APP_ENV' in os.environ
+
+
 # --- Flask App Setup ---
 migrate = Migrate()
 
@@ -87,17 +92,20 @@ def create_app(config_class=Config):
     from blueprints.dashboard import dashboard_bp
     from blueprints.auth import auth_bp
 
-    app_root = app.config.get('APPLICATION_ROOT', '/appop')
+    # Change from app_root with APPLICATION_ROOT prefix to empty string
+    app_root = '' if is_running_under_passenger() else app.config.get('APPLICATION_ROOT', '/appop')
     app.register_blueprint(main_bp, url_prefix=app_root)
     app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
     app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
     app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
-  
+    
+    
 
     # Add context processor to inject app_root into all templates
     @app.context_processor
     def inject_app_root():
-        return dict(app_root=app.config.get('APPLICATION_ROOT', '/appop'))
+        app_root = '' if is_running_under_passenger() else app.config.get('APPLICATION_ROOT', '/appop')
+        return dict(app_root=app_root)
 
     # Error handlers
     @app.errorhandler(404)
@@ -128,6 +136,10 @@ def create_app(config_class=Config):
 
 app = create_app()
 application = app
+
+@app.route('/')
+def redirect_to_appop():
+    return redirect(url_for('main.index'))
 
 @app.route('/show_app_root')
 def show_app_root():

@@ -53,10 +53,10 @@ def create_app(config_class=Config):
     if is_running_under_passenger():
         # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
         app.register_blueprint(main_bp, url_prefix='')
-        app.register_blueprint(auth_bp, url_prefix='/appop/auth')  # Fixed to match other blueprints
-        app.register_blueprint(contact_bp, url_prefix='/appop')  # Register the contact blueprint
-        app.register_blueprint(analysis_bp, url_prefix='/appop/analysis')
-        app.register_blueprint(dashboard_bp, url_prefix='/appop/dashboard')
+        app.register_blueprint(auth_bp, url_prefix='/auth')  # Blueprint URL will be /appop/auth after server routing
+        app.register_blueprint(contact_bp, url_prefix='')  # Blueprint URL will be /appop after server routing
+        app.register_blueprint(analysis_bp, url_prefix='/analysis')  # Blueprint URL will be /appop/analysis after server routing
+        app.register_blueprint(dashboard_bp, url_prefix='/dashboard')  # Blueprint URL will be /appop/dashboard after server routing
     else:
         # For development - explicitly include /appop prefix
         app_root = app.config['APPLICATION_ROOT']
@@ -104,8 +104,9 @@ app = create_app()
 application = app
 
 @app.route('/')
-def redirect_to_appop():
-    return redirect(url_for('main.index'))
+def redirect_to_main():
+    # Redirect to main.index without adding another /appop prefix
+    return redirect(url_for('main.index', _external=True))
 
 @app.route('/show_app_root')
 def show_app_root():

@@ -25,8 +25,8 @@ from services.ai_service import query_openrouter
 from services.utils import allowed_file, generate_report_id
 from services.database import db, migrate_json_to_db
 from blueprints.analysis import analysis_bp
-# Import as much as possible, but comment out what doesn't exist yet
-# from blueprints.auth import auth_bp  # Auth blueprint should be in blueprints directory
+# Import auth blueprint
+from blueprints.auth import auth_bp  # Auth blueprint is now uncommented
 from blueprints.main import main_bp
 from blueprints.dashboard import dashboard_bp
 from blueprints.contact_routes import contact_bp
@@ -53,7 +53,7 @@ def create_app(config_class=Config):
     if is_running_under_passenger():
         # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
         app.register_blueprint(main_bp, url_prefix='')
-        # app.register_blueprint(auth_bp, url_prefix='/appop/auth')  # Commented out until auth_bp is properly imported
+        app.register_blueprint(auth_bp, url_prefix='/auth')  # Uncommented now that auth_bp is imported
         app.register_blueprint(contact_bp, url_prefix='/appop')  # Register the contact blueprint
         app.register_blueprint(analysis_bp, url_prefix='/appop/analysis')
         app.register_blueprint(dashboard_bp, url_prefix='/appop/dashboard')
@@ -61,7 +61,7 @@ def create_app(config_class=Config):
         # For development - explicitly include /appop prefix
         app_root = app.config['APPLICATION_ROOT']
         app.register_blueprint(main_bp, url_prefix=app_root)
-        # app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")  # Commented out until auth_bp is properly imported
+        app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")  # Uncommented now that auth_bp is imported
         app.register_blueprint(contact_bp, url_prefix=app_root)  # Fix: Use app_root directly for contact
         app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
         app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")

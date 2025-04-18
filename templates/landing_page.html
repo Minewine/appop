@@ -323,9 +323,22 @@
   // Navigation function
   function goToUploadPage() {
     const currentLang = localStorage.getItem('lang') || 'en';
-    // Use relative URL for better portability across environments
-    window.location.href = "analysis/upload?lang=" + currentLang;
-    console.log("DEBUG: Redirecting to relative path: analysis/upload"); 
+    
+    // Check if user is logged in (look for auth cookie or session token)
+    const isLoggedIn = document.cookie.split(';').some(c => {
+      return c.trim().startsWith('session=') || c.trim().startsWith('auth_token=');
+    });
+    
+    if (isLoggedIn) {
+      // User is logged in, redirect to upload page directly
+      window.location.href = `/appop/analysis/upload?lang=${currentLang}`;
+      console.log("DEBUG: User is logged in, redirecting to upload page");
+    } else {
+      // User is not logged in, redirect to login with return URL
+      const returnUrl = encodeURIComponent(`/appop/analysis/upload?lang=${currentLang}`);
+      window.location.href = `/appop/auth/login?next=${returnUrl}`;
+      console.log("DEBUG: User is not logged in, redirecting to login page");
+    }
   }
 </script>
 {% endblock %}

@@ -1,0 +1,44 @@
+:root {
+  --primary-dark: #1e3a8a;
+  --primary-light: #2563eb;
+  --neutral-bg-light: #f8f9fa;
+  --text-dark: #1f2937;
+  --text-light: #6c757d;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--neutral-bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+.page-header {
+  background: var(--primary-dark);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+button, input[type="submit"] {
+  background-color: var(--primary-light);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+button:hover, input[type="submit"]:hover {
+  background-color: var(--primary-dark);
+}

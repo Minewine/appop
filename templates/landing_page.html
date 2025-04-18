@@ -336,11 +336,11 @@
     let analysisPath, authPath;
     
     if (isProduction) {
-      // On production server, we still need to include /appop
+      // On production server, always include /appop/ prefix
       analysisPath = '/appop/analysis/upload';
       authPath = '/appop/auth/login';
     } else {
-      // On local dev, we need to include /appop
+      // On local dev, we also need /appop/
       analysisPath = '/appop/analysis/upload';
       authPath = '/appop/auth/login';
     }

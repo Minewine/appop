@@ -336,9 +336,9 @@
     let analysisPath, authPath;
     
     if (isProduction) {
-      // On production, the web server already adds /appop, so we don't include it
-      analysisPath = '/analysis/upload';
-      authPath = '/auth/login';
+      // On production server, we still need to include /appop
+      analysisPath = '/appop/analysis/upload';
+      authPath = '/appop/auth/login';
     } else {
       // On local dev, we need to include /appop
       analysisPath = '/appop/analysis/upload';

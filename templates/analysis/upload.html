@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Job Description - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="upload.heading">Upload Job Description</h2>
+    <p class="page-subtitle" data-i18n="upload.description">Let us analyze what the employer is looking for and optimize your application</p>
+  </div>
+
+  <div class="analysis-card">
+    <form id="upload-form" enctype="multipart/form-data" method="POST" action="{{ url_for('analysis.upload_files') }}">
+      <div class="upload-section">
+        <h3 data-i18n="upload.job_description">Job Description</h3>
+        <div class="form-group">
+          <label for="job-text" class="upload-label" data-i18n="upload.job_text_label">Paste the job description:</label>
+          <textarea id="job-text" name="job_text" class="form-control" rows="8" placeholder="{{ _('Paste the full job description here...') }}"></textarea>
+        </div>
+        <p class="or-divider" data-i18n="upload.or">OR</p>
+        <div class="form-group">
+          <label for="job-file" class="upload-label" data-i18n="upload.job_file_label">Upload job description as file:</label>
+          <div class="file-input-container">
+            <input type="file" id="job-file" name="job_file" class="file-input" accept=".txt,.pdf,.docx,.doc">
+            <label for="job-file" class="file-input-label" data-i18n="upload.choose_file">Choose File</label>
+            <span class="file-name" data-i18n="upload.no_file">No file chosen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-section">
+        <h3 data-i18n="upload.cv_section">Your CV/Resume</h3>
+        <div class="form-group">
+          <label for="cv-text" class="upload-label" data-i18n="upload.cv_text_label">Paste your current CV/resume:</label>
+          <textarea id="cv-text" name="cv_text" class="form-control" rows="8" placeholder="{{ _('Paste your CV here...') }}"></textarea>
+        </div>
+        <p class="or-divider" data-i18n="upload.or">OR</p>
+        <div class="form-group">
+          <label for="cv-file" class="upload-label" data-i18n="upload.cv_file_label">Upload CV/resume as file:</label>
+          <div class="file-input-container">
+            <input type="file" id="cv-file" name="cv_file" class="file-input" accept=".txt,.pdf,.docx,.doc">
+            <label for="cv-file" class="file-input-label" data-i18n="upload.choose_file">Choose File</label>
+            <span class="file-name" data-i18n="upload.no_file">No file chosen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="analyze-btn" class="btn btn-primary" data-i18n="upload.analyze_btn">Analyze & Optimize</button>
+      </div>
+    </form>
+
+    <div id="upload-progress" class="progress-container" style="display: none;">
+      <div class="progress">
+        <div class="progress-bar"></div>
+      </div>
+      <p class="progress-text" data-i18n="upload.processing">Processing your documents...</p>
+    </div>
+
+    <div class="text-center" style="margin-top: 20px;">
+      <button onclick="goToLandingPage()" class="btn btn-outline" data-i18n="upload.back_button">Back to Homepage</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations
+  if (translations.en) {
+    Object.assign(translations.en, {
+      "upload.heading": "Upload Job Description",
+      "upload.description": "Let us analyze what the employer is looking for and optimize your application",
+      "upload.job_description": "Job Description",
+      "upload.job_text_label": "Paste the job description:",
+      "upload.or": "OR",
+      "upload.job_file_label": "Upload job description as file:",
+      "upload.choose_file": "Choose File",
+      "upload.no_file": "No file chosen",
+      "upload.cv_section": "Your CV/Resume",
+      "upload.cv_text_label": "Paste your current CV/resume:",
+      "upload.cv_file_label": "Upload CV/resume as file:",
+      "upload.analyze_btn": "Analyze & Optimize",
+      "upload.processing": "Processing your documents...",
+      "upload.back_button": "Back to Homepage"
+    });
+  }
+  
+  if (translations.fr) {
+    Object.assign(translations.fr, {
+      "upload.heading": "Télécharger l'Offre d'Emploi",
+      "upload.description": "Laissez-nous analyser ce que recherche l'employeur et optimiser votre candidature",
+      "upload.job_description": "Description du Poste",
+      "upload.job_text_label": "Collez la description du poste :",
+      "upload.or": "OU",
+      "upload.job_file_label": "Téléchargez la description du poste sous forme de fichier :",
+      "upload.choose_file": "Choisir un Fichier",
+      "upload.no_file": "Aucun fichier choisi",
+      "upload.cv_section": "Votre CV",
+      "upload.cv_text_label": "Collez votre CV actuel :",
+      "upload.cv_file_label": "Téléchargez votre CV sous forme de fichier :",
+      "upload.analyze_btn": "Analyser & Optimiser",
+      "upload.processing": "Traitement de vos documents...",
+      "upload.back_button": "Retour à la Page d'Accueil"
+    });
+  }
+
+  // File input handling
+  document.querySelectorAll('.file-input').forEach(input => {
+    input.addEventListener('change', function() {
+      const fileNameSpan = this.parentElement.querySelector('.file-name');
+      if (this.files.length > 0) {
+        fileNameSpan.textContent = this.files[0].name;
+      } else {
+        const noFileText = translations[localStorage.getItem('lang') || 'en']['upload.no_file'] || 'No file chosen';
+        fileNameSpan.textContent = noFileText;
+      }
+    });
+  });
+
+  // Form submission handling
+  document.getElementById('upload-form').addEventListener('submit', function(e) {
+    const jobText = document.getElementById('job-text').value;
+    const jobFile = document.getElementById('job-file').files[0];
+    const cvText = document.getElementById('cv-text').value;
+    const cvFile = document.getElementById('cv-file').files[0];
+    
+    if ((!jobText && !jobFile) || (!cvText && !cvFile)) {
+      e.preventDefault();
+      alert('Please provide both a job description and your CV/resume.');
+      return;
+    }
+    
+    document.getElementById('analyze-btn').disabled = true;
+    document.getElementById('upload-progress').style.display = 'block';
+    
+    // Animate progress bar
+    let progress = 0;
+    const interval = setInterval(() => {
+      if (progress < 90) {
+        progress += 5;
+        document.querySelector('.progress-bar').style.width = progress + '%';
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+  });
+
+  function goToLandingPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    window.location.href = `${APP_ROOT}/?lang=${currentLang}`;
+  }
+
+  function navigateToResults(jobId) {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    window.location.href = `${APP_ROOT}/analysis/results/${jobId}?lang=${currentLang}`;
+  }
+</script>
+{% endblock %}

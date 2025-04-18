@@ -17,9 +17,6 @@ reports/*.json
 # Ignore zip files
 *.zip
 
-# Ignore static files
-static/*
-
 # Ignore environment files
 .env
 

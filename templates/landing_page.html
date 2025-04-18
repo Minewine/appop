@@ -1,346 +1,330 @@
-<!DOCTYPE html>
-<html lang="en"> <!-- Default lang, JS will update landing--> 
-<head>
-  <meta charset="UTF-8">
-  <title data-i18n="page.title">The Metric – CV Optimization & Interview Coaching</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
-</head>
-<body>
-  <header class="animate-fade-in">
-    <h1 data-i18n="The Metric">The Metric</h1>
-    <p class="tagline" data-i18n="tagline">We craft CVs that beat the bots—and prep you to shine in any interview.</p>
-    <div class="lang-switch">
-      <span data-i18n="lang.label">Language:</span>
-      <button onclick="setLang('en')" data-lang="en" class="active">English</button>
-      <button onclick="setLang('fr')" data-lang="fr">Français</button>
-    </div>
-  </header>
+{% extends "base.html" %}
 
-  <!-- Section 1: Why -->
-  <section>
-    <div class="container">
-      <h2 data-i18n="why.title">Why The Metric?</h2>
-      <p class="section-intro" data-i18n="why.text">
-        The job market is tougher than ever. Layoffs are rising. Applications vanish into black holes. Getting hired requires precision—and that’s what we deliver.
-      </p>
-    </div>
-  </section>
+{% block title %}The Metric – CV Optimization & Interview Coaching{% endblock %}
 
-  <!-- Section 2: What We Offer -->
-  <section>
-    <div class="container">
-      <h2 data-i18n="what.title">What We Offer</h2>
-      <p class="section-intro" data-i18n="what.text">Our tailored services ensure you stand out at every stage of the hiring process.</p>
-      <ul class="features-list">
-        <li><i class="fa-solid fa-file-signature"></i><div><strong data-i18n="f1.title">CV Optimization:</strong> <span class="feature-text" data-i18n="f1.text">We tailor your CV for each job description so it passes ATS filters and grabs attention.</span></div></li>
-        <li><i class="fa-solid fa-magnifying-glass-chart"></i><div><strong data-i18n="f2.title">Job Description Analysis:</strong> <span class="feature-text" data-i18n="f2.text">We decode the tone, values, and priorities of the employer—so you can respond strategically.</span></div></li>
-        <li><i class="fa-solid fa-comments"></i><div><strong data-i18n="f3.title">Interview Coaching:</strong> <span class="feature-text" data-i18n="f3.text">If you land an interview, we help you prepare with expert-led rehearsals and tailored scripts.</span></div></li>
-        <li><i class="fa-solid fa-book-bookmark"></i><div><strong data-i18n="f4.title">Career Bibliography:</strong> <span class="feature-text" data-i18n="f4.text">In your first session, we document your full professional history—giving us the material to generate compelling applications quickly.</span></div></li>
-      </ul>
-    </div>
-  </section>
+{% block content %}
 
-  <!-- Section 3: How It Works (Pricing) -->
-  <section class="pricing-section">
-    <div class="container">
-      <h2 data-i18n="how.title">How It Works</h2>
-      <p class="section-intro" data-i18n="how.text">A clear, step-by-step process designed for your success, with a guarantee.</p>
-      <div class="pricing-steps">
-        <div class="pricing-step">
-            <span class="step-number" data-i18n="step1.label">Step 1</span>
-            <h3 data-i18n="step1.title">Career Bibliography Session</h3>
-            <p class="price">CHF 100</p>
-            <p data-i18n="step1.desc">We work with you to build a structured narrative of your experience, achievements, and skills.</p>
-        </div>
-        <div class="pricing-step">
-            <span class="step-number" data-i18n="step2.label">Step 2</span>
-            <h3 data-i18n="step2.title">Apply for Jobs</h3>
-            <p class="price">CHF 400</p>
-            <p data-i18n="step2.desc">Covers up to four custom CV + cover letter packages, optimized for each specific job application.</p>
-        </div>
-        <div class="pricing-step">
-             <span class="step-number" data-i18n="step3.label">Step 3</span>
-            <h3 data-i18n="step3.title">Guaranteed Interview</h3>
-             <p class="price" style="color: var(--accent-green-dark);" data-i18n="step3.price">Money Back</p>
-            <p class="guarantee" data-i18n="step3.desc">If none of the four applications lead to an interview, you get a full refund of the CHF 400.</p>
-        </div>
-         <div class="pricing-step">
-             <span class="step-number" data-i18n="step4.label">Step 4</span>
-            <h3 data-i18n="step4.title">Interview Prep</h3>
-             <p class="price" data-i18n="step4.price">Included*</p>
-            <p data-i18n="step4.desc">If you land an interview from our applications, we guide you through expert-led prep sessions.</p>
-             <p class="disclaimer" data-i18n="step4.disclaimer">*Prep session included for interviews resulting from our applications.</p>
-        </div>
+<!-- Why The Metric Section -->
+<section class="bg-pattern">
+  <div class="container">
+    <h2 class="section-title" data-i18n="why.title">Why The Metric?</h2>
+    <p class="section-intro" data-i18n="why.text">
+      The job market is tougher than ever. Layoffs are rising. Applications vanish into black holes.
+      Getting hired requires precision—and that's what we deliver.
+    </p>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">82%</div>
+        <div class="stat-label" data-i18n="stat1.label">Interview Rate</div>
       </div>
-      <div class="buttons-container">
-        <a href="#" id="book-session" class="cta-button primary" data-i18n="book.button">Book Your Initial Session (CHF 100)</a>
-        <a href="#" onclick="goToUploadPage(); return false;" id="test-system" class="cta-button secondary" data-i18n="test.button">Test the System (Demo)</a>
+      <div class="stat-card">
+        <div class="stat-value">300+</div>
+        <div class="stat-label" data-i18n="stat2.label">Optimized Applications</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">5+</div>
+        <div class="stat-label" data-i18n="stat3.label">Countries Served</div>
       </div>
     </div>
-  </section>
-
-  <!-- Section 4: Stats -->
-   <section class="stats-section">
-    <div class="container">
-        <h2 data-i18n="stats.title">Proven Results</h2>
-        <p class="section-intro" data-i18n="stats.text">We measure our success by yours. Here's a glimpse of our impact.</p>
-        <div class="stats">
-            <div class="stat">
-            <i class="fa-solid fa-bullseye"></i>
-            <h3>82%</h3>
-            <p data-i18n="stat1.desc">Client Interview Rate</p>
-            </div>
-            <div class="stat">
-            <i class="fa-solid fa-file-circle-check"></i>
-            <h3>300+</h3>
-            <p data-i18n="stat2.desc">Optimized Applications</p>
-            </div>
-            <div class="stat">
-            <i class="fa-solid fa-globe"></i>
-            <h3>5+</h3>
-            <p data-i18n="stat3.desc">Countries Served</p>
-            </div>
-        </div>
-    </div>
-  </section>
-
-  <!-- Sticky CTA -->
-  <div class="sticky-cta" id="sticky-cta-banner">
-    <span data-i18n="sticky.text">Ready to land your next interview?</span>
-    <a href="#book-session" data-i18n="sticky.link">Start with CHF 100</a>
   </div>
+</section>
 
-  <footer>
-    <div class="container">
-      © <span id="current-year">2024</span> <span data-i18n="The Metric">The Metric</span>. <span data-i18n="footer.rights">All rights reserved.</span>
+<!-- Services Section -->
+<section>
+  <div class="container">
+    <h2 class="section-title" data-i18n="services.title">Our Services</h2>
+    <p class="section-intro" data-i18n="services.intro">
+      Our tailored services ensure you stand out at every stage of the hiring process.
+    </p>
+    
+    <ul class="features-list">
+      <li>
+        <i class="fa-solid fa-file-signature"></i>
+        <div>
+          <strong data-i18n="service1.title">CV Optimization</strong>
+          <p data-i18n="service1.text">We tailor your CV for each job description so it passes ATS filters and grabs attention.</p>
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-magnifying-glass-chart"></i>
+        <div>
+          <strong data-i18n="service2.title">Job Description Analysis</strong>
+          <p data-i18n="service2.text">We decode the tone, values, and priorities of the employer—so you can respond strategically.</p>
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-comments"></i>
+        <div>
+          <strong data-i18n="service3.title">Interview Coaching</strong>
+          <p data-i18n="service3.text">If you land an interview, we help you prepare with expert-led rehearsals and tailored scripts.</p>
+        </div>
+      </li>
+      <li>
+        <i class="fa-solid fa-book-bookmark"></i>
+        <div>
+          <strong data-i18n="service4.title">Career Bibliography</strong>
+          <p data-i18n="service4.text">In your first session, we document your full professional history—giving us the material to generate compelling applications quickly.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="bg-pattern" id="pricing">
+  <div class="container">
+    <h2 class="section-title" data-i18n="process.title">How It Works</h2>
+    <p class="section-intro" data-i18n="process.intro">
+      A clear, step-by-step process designed for your success, with a guarantee.
+    </p>
+    
+    <div class="pricing-steps">
+      <div class="pricing-step">
+        <span class="step-number" data-i18n="step1.number">Step 1</span>
+        <h3 data-i18n="step1.title">Career Bibliography Session</h3>
+        <p class="price">CHF 100</p>
+        <p data-i18n="step1.description">We work with you to build a structured narrative of your experience, achievements, and skills.</p>
+      </div>
+      
+      <div class="pricing-step">
+        <span class="step-number" data-i18n="step2.number">Step 2</span>
+        <h3 data-i18n="step2.title">Apply for Jobs</h3>
+        <p class="price">CHF 400</p>
+        <p data-i18n="step2.description">Covers up to four custom CV + cover letter packages, optimized for each specific job application.</p>
+      </div>
+      
+      <div class="pricing-step">
+        <span class="step-number" data-i18n="step3.number">Step 3</span>
+        <h3 data-i18n="step3.title">Guaranteed Interview</h3>
+        <p class="price" style="color: var(--accent-green-dark);">Money Back</p>
+        <p class="guarantee" data-i18n="step3.description">If none of the four applications lead to an interview, you get a full refund of the CHF 400.</p>
+      </div>
+      
+      <div class="pricing-step">
+        <span class="step-number" data-i18n="step4.number">Step 4</span>
+        <h3 data-i18n="step4.title">Interview Prep</h3>
+        <p class="price">Included*</p>
+        <p data-i18n="step4.description">If you land an interview from our applications, we guide you through expert-led prep sessions.</p>
+        <p class="disclaimer">*Prep session included for interviews resulting from our applications.</p>
+      </div>
     </div>
-  </footer>
+    
+    <div class="actions">
+      <a href="#book-session" class="btn btn-primary" id="book-session" data-i18n="book.button">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Book Your Initial Session (CHF 100)</span>
+      </a>
+      <a href="#" onclick="goToUploadPage(); return false;" class="btn btn-outline" data-i18n="test.button">
+        <i class="fa-solid fa-vial"></i>
+        <span>Test the System (Demo)</span>
+      </a>
+    </div>
+  </div>
+</section>
 
-  <script>
-    // --- Translations Object ---
-    const translations = {
-      en: {
-        "page.title": "The Metric – CV Optimization & Interview Coaching",
-        "The Metric": "The Metric",
-        "tagline": "We craft CVs that beat the bots—and prep you to shine in any interview.",
-        "lang.label": "Language:",
-        "why.title": "Why The Metric?",
-        "why.text": "The job market is tougher than ever. Layoffs are rising. Applications vanish into black holes. Getting hired requires precision—and that’s what we deliver.",
-        "what.title": "What We Offer",
-        "what.text": "Our tailored services ensure you stand out at every stage of the hiring process.",
-        "f1.title": "CV Optimization:",
-        "f1.text": "We tailor your CV for each job description so it passes ATS filters and grabs attention.",
-        "f2.title": "Job Description Analysis:",
-        "f2.text": "We decode the tone, values, and priorities of the employer—so you can respond strategically.",
-        "f3.title": "Interview Coaching:",
-        "f3.text": "If you land an interview, we help you prepare with expert-led rehearsals and tailored scripts.",
-        "f4.title": "Career Bibliography:",
-        "f4.text": "In your first session, we document your full professional history—giving us the material to generate compelling applications quickly.",
-        "how.title": "How It Works",
-        "how.text": "A clear, step-by-step process designed for your success, with a guarantee.",
-        "step1.label": "Step 1",
-        "step1.title": "Career Bibliography Session",
-        "step1.desc": "We work with you to build a structured narrative of your experience, achievements, and skills.",
-        "step2.label": "Step 2",
-        "step2.title": "Apply for Jobs",
-        "step2.desc": "Covers up to four custom CV + cover letter packages, optimized for each specific job application.",
-        "step3.label": "Step 3",
-        "step3.title": "Guaranteed Interview",
-        "step3.price": "Money Back",
-        "step3.desc": "If none of the four applications lead to an interview, you get a full refund of the CHF 400.",
-        "step4.label": "Step 4",
-        "step4.title": "Interview Prep",
-        "step4.price": "Included*",
-        "step4.desc": "If you land an interview from our applications, we guide you through expert-led prep sessions.",
-        "step4.disclaimer": "*Prep session included for interviews resulting from our applications.",
-        "book.button": "Book Your Initial Session (CHF 100)",
-        "test.button": "Test the System (Demo)",
-        "stats.title": "Proven Results",
-        "stats.text": "We measure our success by yours. Here's a glimpse of our impact.",
-        "stat1.desc": "Client Interview Rate",
-        "stat2.desc": "Optimized Applications",
-        "stat3.desc": "Countries Served",
-        "sticky.text": "Ready to land your next interview?",
-        "sticky.link": "Start with CHF 100",
-        "footer.rights": "All rights reserved."
-      },
-      fr: {
-        "page.title": "Le Metric – Optimisation de CV & Préparation aux Entretiens",
-        "The Metric": "Le Metric",
-        "tagline": "Nous créons des CV qui surpassent les filtres ATS et vous préparons à briller en entretien.",
-        "lang.label": "Langue :",
-        "why.title": "Pourquoi Le Metric ?",
-        "why.text": "Le marché du travail est plus compétitif que jamais. Les licenciements augmentent. Les candidatures disparaissent dans des trous noirs. Pour réussir, il faut de la précision—et c’est ce que nous offrons.",
-        "what.title": "Ce que nous proposons",
-        "what.text": "Nos services personnalisés vous permettent de vous démarquer à chaque étape du processus de recrutement.",
-        "f1.title": "Optimisation du CV :",
-        "f1.text": "Nous adaptons votre CV à chaque offre afin qu’il passe les filtres ATS et attire l’attention.",
-        "f2.title": "Analyse de l'offre d'emploi :",
-        "f2.text": "Nous décryptons le ton, les valeurs et les priorités de l'employeur afin de vous aider à répondre stratégiquement.",
-        "f3.title": "Préparation à l'entretien :",
-        "f3.text": "Si vous obtenez un entretien, nous vous préparons avec des répétitions guidées par un expert et des scripts personnalisés.",
-        "f4.title": "Bibliographie de carrière :",
-        "f4.text": "Lors de votre première session, nous documentons tout votre parcours professionnel pour générer des candidatures percutantes.",
-        "how.title": "Comment ça marche",
-        "how.text": "Un processus clair et étape par étape conçu pour votre succès, avec une garantie.",
-        "step1.label": "Étape 1",
-        "step1.title": "Session Bibliographie de Carrière",
-        "step1.desc": "Nous travaillons avec vous pour construire un récit structuré de votre expérience, de vos réalisations et de vos compétences.",
-        "step2.label": "Étape 2",
-        "step2.title": "Postuler aux Offres",
-        "step2.desc": "Couvre jusqu'à quatre dossiers CV + lettre de motivation personnalisés, optimisés pour chaque offre d'emploi spécifique.",
-        "step3.label": "Étape 3",
-        "step3.title": "Entretien Garanti",
-        "step3.price": "Remboursé",
-        "step3.desc": "Si aucune des quatre candidatures ne débouche sur un entretien, vous êtes intégralement remboursé des CHF 400.",
-        "step4.label": "Étape 4",
-        "step4.title": "Préparation à l'Entretien",
-        "step4.price": "Inclus*",
-        "step4.desc": "Si vous décrochez un entretien grâce à nos candidatures, nous vous guidons à travers des sessions de préparation expertes.",
-        "step4.disclaimer": "*Session de préparation incluse pour les entretiens résultant de nos candidatures.",
-        "book.button": "Réserver la session initiale (CHF 100)",
-        "test.button": "Tester le système (Démo)",
-        "stats.title": "Résultats Prouvés",
-        "stats.text": "Nous mesurons notre succès au vôtre. Voici un aperçu de notre impact.",
-        "stat1.desc": "Taux d'Entretiens Clients",
-        "stat2.desc": "Candidatures Optimisées",
-        "stat3.desc": "Pays Desservis",
-        "sticky.text": "Prêt(e) à décrocher votre prochain entretien ?",
-        "sticky.link": "Commencez avec CHF 100",
-        "footer.rights": "Tous droits réservés."
-      }
-    };
-
-    // --- Get app root from template context (set in Flask route) ---
-    const APP_ROOT = "{{ app_root|default('/') }}".replace(/\/+$/, '');
-
-    // --- Language Switching Function ---
-    function setLang(lang) {
-      // **** Start Debugging Logs ****
-      console.log(`DEBUG: setLang called with language: ${lang}`);
-      // **** End Debugging Logs ****
-
-      // Ensure the requested language exists in translations, fallback to 'en'
-      const effectiveLang = translations[lang] ? lang : 'en';
-      // **** Start Debugging Logs ****
-      console.log(`DEBUG: Effective language set to: ${effectiveLang}`);
-      // **** End Debugging Logs ****
+<!-- Testimonials Section -->
+<section>
+  <div class="container">
+    <h2 class="section-title" data-i18n="testimonials.title">Client Success Stories</h2>
+    <p class="section-intro" data-i18n="testimonials.intro">
+      Don't just take our word for it — hear from professionals who've transformed their job search with The Metric.
+    </p>
+    
+    <div class="testimonial-slider">
+      <div class="testimonial-item">
+        <p class="testimonial-text" data-i18n="testimonial1.text">
+          "After months of silence from employers, The Metric helped me optimize my CV. Within two weeks, 
+          I had three interview requests. Their systematic approach made all the difference."
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-author-info">
+            <h4 data-i18n="testimonial1.name">Sarah T.</h4>
+            <p data-i18n="testimonial1.position">Product Manager, Switzerland</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 
-      localStorage.setItem('lang', effectiveLang);
-      document.documentElement.lang = effectiveLang;
+{% endblock %}
 
-      const dictionary = translations[effectiveLang];
-      const defaultDictionary = translations['en']; // English for fallback
-
-      // **** Start Debugging Logs ****
-      if (!dictionary) {
-          console.error(`DEBUG: Translation dictionary for "${effectiveLang}" not found!`);
-          // If the dictionary is missing, we might as well stop here or only use fallback
-          // For robustness, we'll continue and rely on the fallback logic below.
-      }
-      // **** End Debugging Logs ****
-
-
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        let text; // Variable to hold the final text
-
-        // Try to get text from the selected language dictionary
-        if (dictionary) {
-            text = dictionary[key];
-        }
-
-        // If not found in the target language, try the English fallback dictionary
-        if (text === undefined && defaultDictionary) {
-            text = defaultDictionary[key];
-        }
-
-        // If still not found (or dictionaries were missing), use original text content as a last resort
-        if (text === undefined) {
-            // **** Start Debugging Logs ****
-            // console.warn(`DEBUG: Translation key "${key}" not found in "${effectiveLang}" or "en". Using original text.`);
-            // **** End Debugging Logs ****
-             // Use original text/value depending on element type
-            text = (el.tagName === 'INPUT' && el.type === 'submit') ? el.value : el.textContent;
-        }
-
-        // Update element content based on tag type
-        if (el.tagName === 'TITLE') {
-            document.title = text;
-        } else {
-             // We generally set textContent for buttons/links in this design
-            el.textContent = text;
-        }
-      });
-
-      // Update active button style
-      document.querySelectorAll('.lang-switch button').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === effectiveLang);
-      });
-      // **** Start Debugging Logs ****
-      console.log(`DEBUG: Language setting process complete for: ${effectiveLang}`);
-      // **** End Debugging Logs ****
+{% block extra_css %}
+<style>
+  /* Landing page specific styles */
+  .hero-section {
+    background: var(--gradient-primary);
+    padding: 5rem 0 3rem;
+    color: white;
+    text-align: center;
+  }
+  
+  .hero-section .page-title {
+    margin-top: 0;
+  }
+  
+  .hero-section h1 {
+    color: white;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+  
+  .hero-section .page-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .bg-pattern {
+    background-color: var(--light-color);
+    position: relative;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-section h1 {
+      font-size: 2.5rem;
     }
+    
+    .hero-section .page-subtitle {
+      font-size: 1.25rem;
+    }
+    
+    .pricing-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
 
-    // --- Navigation Function for Upload Page ---
-    function goToUploadPage() {
-      const currentLang = localStorage.getItem('lang') || 'en';
+{% block extra_js_body %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize language buttons
+    const currentLang = localStorage.getItem('lang') || 'en';
+    const langButtons = document.querySelectorAll('[data-lang]');
+    langButtons.forEach(btn => {
+      if (btn.dataset.lang === currentLang) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
       
-      // Build the relative paths using the APP_ROOT for consistent behavior
-      const authPath = '/auth/login';
-      const uploadPath = '/analysis/upload';
-      
-      // Construct full URL with proper parameters
-      const loginUrl = `/appop${authPath}?next=${encodeURIComponent('/appop' + uploadPath)}&lang=${currentLang}`;
-      console.log("Navigating to:", loginUrl); // For debugging
-      window.location.href = loginUrl;
-    }
-
-    // --- Sticky CTA Logic ---
-    const stickyBanner = document.getElementById('sticky-cta-banner');
-    if (stickyBanner) {
-        let triggered = false;
-        const checkAndToggleBanner = () => {
-            const showThreshold = 400;
-            const isSmallScreen = window.innerWidth < 768;
-            const mobileShowThreshold = 150;
-            const currentScrollY = window.scrollY;
-            const effectiveShowThreshold = isSmallScreen ? mobileShowThreshold : showThreshold;
-            if (currentScrollY > effectiveShowThreshold && !triggered) {
-                stickyBanner.classList.add('visible');
-                triggered = true;
-            }
-            // Optional Hide Logic (uncomment if needed)
-            // else if (currentScrollY <= (effectiveShowThreshold / 2) && triggered) {
-            //    stickyBanner.classList.remove('visible');
-            //    triggered = false;
-            // }
-        };
-        window.addEventListener('scroll', checkAndToggleBanner, { passive: true });
-        checkAndToggleBanner(); // Initial check
-    }
-
-    // --- Set Current Year in Footer ---
-    const yearSpan = document.getElementById('current-year');
-    if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
-
-    // --- Initial Language Load ---
-    document.addEventListener('DOMContentLoaded', () => {
-      let preferredLang = localStorage.getItem('lang');
-      if (!preferredLang) {
-          const browserLang = navigator.language.split('-')[0];
-          preferredLang = translations[browserLang] ? browserLang : 'en';
-      }
-      // No longer relying on '{{ lang }}' placeholder here
-      console.log("DEBUG: Initial language load using:", preferredLang); // Debug initial lang
-      setLang(preferredLang);
+      btn.addEventListener('click', function() {
+        setLang(this.dataset.lang);
+      });
     });
+  });
+  
+  // Add translations
+  if (translations.en) {
+    Object.assign(translations.en, {
+      "hero.subtitle": "We craft CVs that beat the bots—and prep you to shine in any interview.",
+      "cta.primary": "Book Your Initial Session",
+      "cta.secondary": "Test the System (Demo)",
+      "why.title": "Why The Metric?",
+      "why.text": "The job market is tougher than ever. Layoffs are rising. Applications vanish into black holes. Getting hired requires precision—and that's what we deliver.",
+      "stat1.label": "Interview Rate",
+      "stat2.label": "Optimized Applications",
+      "stat3.label": "Countries Served",
+      "services.title": "Our Services",
+      "services.intro": "Our tailored services ensure you stand out at every stage of the hiring process.",
+      "service1.title": "CV Optimization",
+      "service1.text": "We tailor your CV for each job description so it passes ATS filters and grabs attention.",
+      "service2.title": "Job Description Analysis",
+      "service2.text": "We decode the tone, values, and priorities of the employer—so you can respond strategically.",
+      "service3.title": "Interview Coaching",
+      "service3.text": "If you land an interview, we help you prepare with expert-led rehearsals and tailored scripts.",
+      "service4.title": "Career Bibliography",
+      "service4.text": "In your first session, we document your full professional history—giving us the material to generate compelling applications quickly.",
+      "process.title": "How It Works",
+      "process.intro": "A clear, step-by-step process designed for your success, with a guarantee.",
+      "step1.number": "Step 1",
+      "step1.title": "Career Bibliography Session",
+      "step1.description": "We work with you to build a structured narrative of your experience, achievements, and skills.",
+      "step2.number": "Step 2",
+      "step2.title": "Apply for Jobs",
+      "step2.description": "Covers up to four custom CV + cover letter packages, optimized for each specific job application.",
+      "step3.number": "Step 3",
+      "step3.title": "Guaranteed Interview",
+      "step3.description": "If none of the four applications lead to an interview, you get a full refund of the CHF 400.",
+      "step4.number": "Step 4",
+      "step4.title": "Interview Prep",
+      "step4.description": "If you land an interview from our applications, we guide you through expert-led prep sessions.",
+      "book.button": "Book Your Initial Session (CHF 100)",
+      "test.button": "Test the System (Demo)",
+      "testimonials.title": "Client Success Stories",
+      "testimonials.intro": "Don't just take our word for it — hear from professionals who've transformed their job search with The Metric.",
+      "testimonial1.text": "After months of silence from employers, The Metric helped me optimize my CV. Within two weeks, I had three interview requests. Their systematic approach made all the difference.",
+      "testimonial1.name": "Sarah T.",
+      "testimonial1.position": "Product Manager, Switzerland",
+      "final-cta.title": "Ready to Stand Out?",
+      "final-cta.text": "Take the first step toward interview success with our proven system.",
+      "final-cta.primary": "Book Your Initial Session",
+      "final-cta.secondary": "Try Demo First"
+    });
+  }
+  
+  if (translations.fr) {
+    Object.assign(translations.fr, {
+      "hero.subtitle": "Nous créons des CV qui surpassent les filtres ATS et vous préparons à briller en entretien.",
+      "cta.primary": "Réservez Votre Session Initiale",
+      "cta.secondary": "Tester le Système (Démo)",
+      "why.title": "Pourquoi The Metric?",
+      "why.text": "Le marché du travail est plus difficile que jamais. Les licenciements augmentent. Les candidatures disparaissent dans des trous noirs. Réussir son embauche exige de la précision—et c'est ce que nous offrons.",
+      "stat1.label": "Taux d'Entretiens",
+      "stat2.label": "Candidatures Optimisées",
+      "stat3.label": "Pays Servis",
+      "services.title": "Nos Services",
+      "services.intro": "Nos services sur mesure vous permettent de vous démarquer à chaque étape du processus d'embauche.",
+      "service1.title": "Optimisation de CV",
+      "service1.text": "Nous adaptons votre CV à chaque description de poste pour qu'il passe les filtres ATS et attire l'attention.",
+      "service2.title": "Analyse des Offres d'Emploi",
+      "service2.text": "Nous décodons le ton, les valeurs et les priorités de l'employeur pour vous permettre de répondre stratégiquement.",
+      "service3.title": "Coaching d'Entretien",
+      "service3.text": "Si vous décrochez un entretien, nous vous aidons à vous préparer avec des répétitions dirigées par des experts et des scripts personnalisés.",
+      "service4.title": "Bibliographie de Carrière",
+      "service4.text": "Lors de votre première session, nous documentons tout votre parcours professionnel pour générer des candidatures percutantes.",
+      "process.title": "Comment Ça Fonctionne",
+      "process.intro": "Un processus clair et étape par étape conçu pour votre réussite, avec une garantie.",
+      "step1.number": "Étape 1",
+      "step1.title": "Session Bibliographie de Carrière",
+      "step1.description": "Nous travaillons avec vous pour construire un récit structuré de votre expérience, de vos réalisations et de vos compétences.",
+      "step2.number": "Étape 2",
+      "step2.title": "Postuler aux Emplois",
+      "step2.description": "Couvre jusqu'à quatre dossiers CV + lettre de motivation personnalisés, optimisés pour chaque candidature spécifique.",
+      "step3.number": "Étape 3",
+      "step3.title": "Entretien Garanti",
+      "step3.description": "Si aucune des quatre candidatures ne débouche sur un entretien, vous êtes intégralement remboursé des CHF 400.",
+      "step4.number": "Étape 4",
+      "step4.title": "Préparation à l'Entretien",
+      "step4.description": "Si vous décrochez un entretien grâce à nos candidatures, nous vous guidons à travers des sessions de préparation expertes.",
+      "book.button": "Réserver Votre Session Initiale (CHF 100)",
+      "test.button": "Tester le Système (Démo)",
+      "testimonials.title": "Témoignages de Réussite",
+      "testimonials.intro": "Ne nous croyez pas sur parole - écoutez les professionnels qui ont transformé leur recherche d'emploi avec The Metric.",
+      "testimonial1.text": "Après des mois de silence de la part des employeurs, The Metric m'a aidé à optimiser mon CV. En deux semaines, j'avais trois demandes d'entretien. Leur approche systématique a fait toute la différence.",
+      "testimonial1.name": "Sarah T.",
+      "testimonial1.position": "Chef de Produit, Suisse",
+      "final-cta.title": "Prêt à Vous Démarquer?",
+      "final-cta.text": "Faites le premier pas vers le succès en entretien avec notre système éprouvé.",
+      "final-cta.primary": "Réserver Votre Session Initiale",
+      "final-cta.secondary": "Essayer la Démo d'Abord"
+    });
+  }
 
-  </script>
-</body>
-</html>
+  // Navigation function
+  function goToUploadPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    const authPath = `${APP_ROOT}/auth/login`;
+    const uploadPath = `${APP_ROOT}/analysis/upload`;
+    const loginUrl = authPath + "?next=" + encodeURIComponent(uploadPath) + "&lang=" + currentLang;
+    window.location.href = loginUrl;
+  }
+</script>
+{% endblock %}

@@ -1,26 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ lang|default('en') }}">
-<head>
-  <meta charset="UTF-8">
-  <title data-i18n="login.title">Login - The Metric</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-  <header class="animate-fade-in">
-    <h1 data-i18n="The Metric">The Metric</h1>
-    <p class="tagline" data-i18n="login.subtitle">Log in to access your account</p>
-  </header>
+{% extends "base.html" %}
 
-  <section>
-    <div class="container">
-      <div class="form-container animate-slide-up">
-        <div class="form-header">
-          <h2 data-i18n="login.heading">Login</h2>
-          <p data-i18n="login.description">Enter your credentials to continue</p>
-        </div>
+{% block title %}Login - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="login.heading">Login</h2>
+    <p class="page-subtitle" data-i18n="login.description">Enter your credentials to continue</p>
+  </div>
+
+  <div class="analysis-card">
         
         {% if get_flashed_messages() %}
         <div class="flash-messages">
@@ -32,92 +21,69 @@
         
         <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next', ''), lang=lang) }}">
           <div class="form-group">
-            <label for="email" data-i18n="login.email">Email Address</label>
-            <input type="email" id="email" name="email" required autocomplete="email">
+            <label class="form-label" for="email" data-i18n="login.email">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" required autocomplete="email">
           </div>
           <div class="form-group">
-            <label for="password" data-i18n="login.password">Password</label>
-            <input type="password" id="password" name="password" required>
+            <label class="form-label" for="password" data-i18n="login.password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
           </div>
-          <button type="submit" class="submit-btn" data-i18n="login.submit">Log In</button>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="login.submit">Log In</button>
+          </div>
         </form>
         
-        <div class="alt-action">
-          <span data-i18n="login.no_account">Don't have an account?</span>
-          <a href="{{ url_for('auth.signup', next=request.args.get('next', ''), lang=lang) }}" data-i18n="login.signup_link">Sign Up</a>
+        <div class="text-center mt-4">
+          <p>
+            <span data-i18n="login.no_account">Don't have an account?</span>
+            <a href="{{ url_for('auth.signup', next=request.args.get('next', ''), lang=lang) }}" data-i18n="login.signup_link">Sign Up</a>
+          </p>
         </div>
       </div>
     </div>
-  </section>
+</div>
+{% endblock %}
 
-  <footer>
-    <div class="container">
-      © <span id="current-year">2024</span> <span data-i18n="The Metric">The Metric</span>. <span data-i18n="footer.rights">All rights reserved.</span>
-    </div>
-  </footer>
-
-  <script>
-    // --- Translations Object ---
-    const translations = {
-      en: {
-        "The Metric": "The Metric",
-        "login.title": "Login - The Metric",
-        "login.subtitle": "Log in to access your account",
-        "login.heading": "Login",
-        "login.description": "Enter your credentials to continue",
-        "login.email": "Email Address",
-        "login.password": "Password",
-        "login.submit": "Log In",
-        "login.no_account": "Don't have an account?",
-        "login.signup_link": "Sign Up",
-        "footer.rights": "All rights reserved."
-      },
-      fr: {
-        "The Metric": "Le Metric",
-        "login.title": "Connexion - Le Metric",
-        "login.subtitle": "Connectez-vous pour accéder à votre compte",
-        "login.heading": "Connexion",
-        "login.description": "Entrez vos identifiants pour continuer",
-        "login.email": "Adresse Email",
-        "login.password": "Mot de passe",
-        "login.submit": "Se connecter",
-        "login.no_account": "Vous n'avez pas de compte ?",
-        "login.signup_link": "S'inscrire",
-        "footer.rights": "Tous droits réservés."
-      }
-    };
-
-    // --- Set Current Year in Footer ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const yearSpan = document.getElementById('current-year');
-      if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
-
-      // --- Set language based on URL parameter or browser preference ---
-      const urlParams = new URLSearchParams(window.location.search);
-      const langParam = urlParams.get('lang');
-      const browserLang = navigator.language.split('-')[0];
-      const lang = langParam || localStorage.getItem('lang') || (translations[browserLang] ? browserLang : 'en');
-      
-      // Set HTML language attribute
-      document.documentElement.lang = translations[lang] ? lang : 'en';
-      localStorage.setItem('lang', document.documentElement.lang);
-      
-      // Process translations
-      const dictionary = translations[lang] || translations['en'];
-      
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        const text = dictionary[key];
-        
-        if (text !== undefined) {
-          if (el.tagName === 'TITLE') {
-            document.title = text;
-          } else {
-            el.textContent = text;
-          }
-        }
-      });
+{% block extra_js_body %}
+<script>
+  // Add these translations to the existing ones
+  if (translations.en) {
+    Object.assign(translations.en, {
+      "login.title": "Login - The Metric",
+      "login.subtitle": "Log in to access your account",
+      "login.heading": "Login",
+      "login.description": "Enter your credentials to continue",
+      "login.email": "Email Address",
+      "login.password": "Password",
+      "login.submit": "Log In",
+      "login.no_account": "Don't have an account?",
+      "login.signup_link": "Sign Up"
     });
-  </script>
-</body>
-</html>
+  }
+  
+  if (translations.fr) {
+    Object.assign(translations.fr, {
+      "login.title": "Connexion - Le Metric",
+      "login.subtitle": "Connectez-vous pour accéder à votre compte",
+      "login.heading": "Connexion",
+      "login.description": "Entrez vos identifiants pour continuer",
+      "login.email": "Adresse Email",
+      "login.password": "Mot de passe",
+      "login.submit": "Se connecter",
+      "login.no_account": "Vous n'avez pas de compte ?",
+      "login.signup_link": "S'inscrire"
+    });
+  }
+
+  function goToLandingPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    window.location.href = `${APP_ROOT}/?lang=${currentLang}`;
+  }
+  
+  function goToUploadPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    const uploadPath = `${APP_ROOT}/analysis/upload`;
+    window.location.href = uploadPath + "?lang=" + currentLang;
+  }
+</script>
+{% endblock %}

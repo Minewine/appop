@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="results.heading">Analysis Results</h2>
+    <p class="page-subtitle" data-i18n="results.description">Here's how your CV compares to the job requirements</p>
+  </div>
+
+  <div class="results-section">
+    <div class="job-summary-card">
+      <h3 data-i18n="results.job_summary">Job Position Summary</h3>
+      <div class="job-title">{{ job_title }}</div>
+      <div class="job-details">
+        <div class="job-meta">{{ company }}</div>
+        <div class="job-meta">{{ location }}</div>
+      </div>
+      <div class="job-summary">
+        {{ job_summary }}
+      </div>
+    </div>
+
+    <div class="results-card match-score">
+      <h3 data-i18n="results.match_score">Match Score</h3>
+      <div class="score-container">
+        <div class="score-circle" data-score="{{ match_score }}">
+          <span class="score-value">{{ match_score }}%</span>
+          <span class="score-label" data-i18n="results.match">match</span>
+        </div>
+      </div>
+      <div class="score-explanation">
+        <p data-i18n="results.score_explanation">This score represents how well your current CV matches the job description. Scores above 80% are considered very competitive.</p>
+      </div>
+    </div>
+
+    <div class="results-card skills-analysis">
+      <h3 data-i18n="results.skills">Skills & Qualifications</h3>
+      
+      <div class="skills-categories">
+        <div class="skill-category">
+          <h4 data-i18n="results.required_skills">Required Skills</h4>
+          <ul class="skills-list">
+            {% for skill in required_skills %}
+            <li class="skill-item {% if skill.in_cv %}matched{% endif %}">
+              <span class="skill-name">{{ skill.name }}</span>
+              {% if skill.in_cv %}
+              <span class="skill-match">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              {% else %}
+              <span class="skill-missing">
+                <i class="fa-solid fa-xmark"></i>
+              </span>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        
+        <div class="skill-category">
+          <h4 data-i18n="results.preferred_skills">Preferred Skills</h4>
+          <ul class="skills-list">
+            {% for skill in preferred_skills %}
+            <li class="skill-item {% if skill.in_cv %}matched{% endif %}">
+              <span class="skill-name">{{ skill.name }}</span>
+              {% if skill.in_cv %}
+              <span class="skill-match">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              {% else %}
+              <span class="skill-missing">
+                <i class="fa-solid fa-xmark"></i>
+              </span>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-card improvement-suggestions">
+      <h3 data-i18n="results.suggestions">Optimization Suggestions</h3>
+      
+      {% if suggestions %}
+      <ul class="suggestions-list">
+        {% for suggestion in suggestions %}
+        <li class="suggestion-item">
+          <div class="suggestion-type">{{ suggestion.type }}</div>
+          <div class="suggestion-content">{{ suggestion.content }}</div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="no-suggestions" data-i18n="results.no_suggestions">No specific suggestions available for this job.</p>
+      {% endif %}
+    </div>
+
+    <div class="optimized-cv-preview">
+      <h3 data-i18n="results.optimized_cv">Optimized CV Preview</h3>
+      <div class="cv-preview-content">
+        {{ optimized_cv | safe }}
+      </div>
+      <div class="cv-preview-actions">
+        <a href="{{ url_for('analysis.download_cv', job_id=job_id) }}" class="btn btn-primary" data-i18n="results.download">Download Optimized CV</a>
+      </div>
+    </div>
+
+    <div class="results-card actions-card">
+      <div class="actions-container">
+        <button onclick="goToUploadPage()" class="btn btn-secondary" data-i18n="results.try_another">Analyze Another Job</button>
+        <button onclick="goToLandingPage()" class="btn btn-outline" data-i18n="results.back_home">Back to Homepage</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations for this page
+  if (translations.en) {
+    Object.assign(translations.en, {
+      "results.heading": "Analysis Results",
+      "results.description": "Here's how your CV compares to the job requirements",
+      "results.job_summary": "Job Position Summary",
+      "results.match_score": "Match Score",
+      "results.match": "match",
+      "results.score_explanation": "This score represents how well your current CV matches the job description. Scores above 80% are considered very competitive.",
+      "results.skills": "Skills & Qualifications",
+      "results.required_skills": "Required Skills",
+      "results.preferred_skills": "Preferred Skills",
+      "results.suggestions": "Optimization Suggestions",
+      "results.no_suggestions": "No specific suggestions available for this job.",
+      "results.optimized_cv": "Optimized CV Preview",
+      "results.download": "Download Optimized CV",
+      "results.try_another": "Analyze Another Job",
+      "results.back_home": "Back to Homepage"
+    });
+  }
+  
+  if (translations.fr) {
+    Object.assign(translations.fr, {
+      "results.heading": "Résultats de l'Analyse",
+      "results.description": "Voici comment votre CV se compare aux exigences du poste",
+      "results.job_summary": "Résumé du Poste",
+      "results.match_score": "Score de Correspondance",
+      "results.match": "correspondance",
+      "results.score_explanation": "Ce score représente la correspondance entre votre CV actuel et la description du poste. Un score supérieur à 80% est considéré comme très compétitif.",
+      "results.skills": "Compétences et Qualifications",
+      "results.required_skills": "Compétences Requises",
+      "results.preferred_skills": "Compétences Préférées",
+      "results.suggestions": "Suggestions d'Optimisation",
+      "results.no_suggestions": "Aucune suggestion spécifique disponible pour ce poste.",
+      "results.optimized_cv": "Aperçu du CV Optimisé",
+      "results.download": "Télécharger le CV Optimisé",
+      "results.try_another": "Analyser un Autre Poste",
+      "results.back_home": "Retour à la Page d'Accueil"
+    });
+  }
+
+  // Score circle animation
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+      const scoreCircle = document.querySelector('.score-circle');
+      if (scoreCircle) {
+        const score = parseInt(scoreCircle.dataset.score);
+        scoreCircle.style.setProperty('--score-percentage', score);
+        scoreCircle.classList.add('animate');
+      }
+    }, 500);
+  });
+
+  function goToUploadPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    window.location.href = `${APP_ROOT}/analysis/upload?lang=${currentLang}`;
+  }
+
+  function goToLandingPage() {
+    const currentLang = localStorage.getItem('lang') || 'en';
+    window.location.href = `${APP_ROOT}/?lang=${currentLang}`;
+  }
+</script>
+{% endblock %}

@@ -28,3 +28,15 @@ def about():
     # Get language preference from session or default to English
     lang = session.get('lang', 'en')
     return render_template('about.html', lang=lang)
+
+@main_bp.route('/set-language/<lang>')
+def set_language(lang):
+    """Set the user's language preference"""
+    # Validate language code
+    if lang not in ['en', 'fr']:
+        lang = 'en'
+    
+    session['lang'] = lang
+    
+    # Redirect back to the page they were on
+    return redirect(request.referrer or url_for('main.index'))

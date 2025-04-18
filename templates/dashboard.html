@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="dashboard.title">Your Dashboard</h2>
+    <p class="page-subtitle" data-i18n="dashboard.subtitle">Track your progress and resume analyses</p>
+  </div>
+
+  <div class="analysis-card">
+    <div class="dashboard-header">
+      <h3 data-i18n="dashboard.welcome">Welcome back, {{ user.name }}</h3>
+      <a href="{{ url_for('analysis.upload') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n="dashboard.new_analysis">New Analysis</span>
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.total_analyses }}</div>
+        <div class="stat-label" data-i18n="dashboard.total_analyses">Total Analyses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.best_score }}%</div>
+        <div class="stat-label" data-i18n="dashboard.best_score">Best Match Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.improved_resumes }}</div>
+        <div class="stat-label" data-i18n="dashboard.improved_resumes">Improved Resumes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_improvement }}%</div>
+        <div class="stat-label" data-i18n="dashboard.avg_improvement">Avg. Improvement</div>
+      </div>
+    </div>
+
+    <h3 class="mt-5" data-i18n="dashboard.recent_analyses">Recent Analyses</h3>
+
+    <div class="table-responsive">
+      <table class="table-hover">
+        <thead>
+          <tr>
+            <th data-i18n="dashboard.table.date">Date</th>
+            <th data-i18n="dashboard.table.job_title">Job Title</th>
+            <th data-i18n="dashboard.table.score">Score</th>
+            <th data-i18n="dashboard.table.status">Status</th>
+            <th data-i18n="dashboard.table.actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for analysis in analyses %}
+          <tr>
+            <td>{{ analysis.date }}</td>
+            <td>{{ analysis.job_title }}</td>
+            <td>
+              <span class="badge {% if analysis.score < 50 %}badge-danger{% elif analysis.score < 75 %}badge-warning{% else %}badge-success{% endif %}">
+                {{ analysis.score }}%
+              </span>
+            </td>
+            <td>
+              <span class="badge {% if analysis.status == 'Complete' %}badge-success{% elif analysis.status == 'In Progress' %}badge-primary{% else %}badge-secondary{% endif %}">
+                {{ analysis.status }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('analysis.view', id=analysis.id) }}" class="btn btn-sm btn-outline">
+                <i class="fa-solid fa-eye"></i>
+                <span data-i18n="dashboard.view">View</span>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if not analyses %}
+    <div class="text-center mt-4 mb-4">
+      <p data-i18n="dashboard.no_analyses">You haven't performed any analyses yet.</p>
+      <a href="{{ url_for('analysis.upload') }}" class="btn btn-primary mt-3">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n="dashboard.start_first">Start your first analysis</span>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations for this page
+  Object.keys(translations).forEach(lang => {
+    translations[lang] = {
+      ...translations[lang],
+      "dashboard.title": lang === 'fr' ? "Votre Tableau de Bord" : "Your Dashboard",
+      "dashboard.subtitle": lang === 'fr' ? "Suivez vos progrès et analyses de CV" : "Track your progress and resume analyses",
+      "dashboard.welcome": lang === 'fr' ? "Bienvenue, {{user.name}}" : "Welcome back, {{user.name}}",
+      "dashboard.new_analysis": lang === 'fr' ? "Nouvelle Analyse" : "New Analysis",
+      "dashboard.total_analyses": lang === 'fr' ? "Analyses Totales" : "Total Analyses",
+      "dashboard.best_score": lang === 'fr' ? "Meilleur Score" : "Best Match Score",
+      "dashboard.improved_resumes": lang === 'fr' ? "CV Améliorés" : "Improved Resumes",
+      "dashboard.avg_improvement": lang === 'fr' ? "Amélioration Moy." : "Avg. Improvement",
+      "dashboard.recent_analyses": lang === 'fr' ? "Analyses Récentes" : "Recent Analyses",
+      "dashboard.table.date": lang === 'fr' ? "Date" : "Date",
+      "dashboard.table.job_title": lang === 'fr' ? "Titre du Poste" : "Job Title",
+      "dashboard.table.score": lang === 'fr' ? "Score" : "Score",
+      "dashboard.table.status": lang === 'fr' ? "Statut" : "Status",
+      "dashboard.table.actions": lang === 'fr' ? "Actions" : "Actions",
+      "dashboard.view": lang === 'fr' ? "Voir" : "View",
+      "dashboard.no_analyses": lang === 'fr' ? "Vous n'avez encore effectué aucune analyse." : "You haven't performed any analyses yet.",
+      "dashboard.start_first": lang === 'fr' ? "Démarrer votre première analyse" : "Start your first analysis"
+    };
+  });
+</script>
+{% endblock %}

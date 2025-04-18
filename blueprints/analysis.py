@@ -1,321 +1,220 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, session, send_file
 from werkzeug.utils import secure_filename
-from datetime import datetime
 import os
-import json
+from datetime import datetime
+import uuid
 from services.pdf_service import extract_pdf_text
-from services.ai_service import query_openrouter, analyze_cv_with_jd
+from services.ai_service import query_openrouter
 from services.utils import allowed_file, generate_report_id
-from blueprints.auth import add_report_to_user
+import io
 
-# Create the blueprint instance
 analysis_bp = Blueprint('analysis', __name__)
 
-# Authentication check decorator
-def login_required(view_func):
-    def wrapped_view(*args, **kwargs):
-        if 'user_email' not in session:
-            # Store the requested URL in the session for redirection after login
-            session['next'] = request.url
-            flash('Please log in to access this feature.', 'warning')
-            return redirect(url_for('auth.login', next=request.url, lang=session.get('lang', 'en')))
-        return view_func(*args, **kwargs)
-    # Preserve the original function's name and docstring
-    wrapped_view.__name__ = view_func.__name__
-    wrapped_view.__doc__ = view_func.__doc__
-    return wrapped_view
-
 @analysis_bp.route('/upload', methods=['GET', 'POST'])
-@login_required
 def upload():
-    """Handle file uploads and start analysis"""
-    # Get language preference from query param or session
-    lang = request.args.get('lang', session.get('lang', 'en'))
-    # Store language preference in session
-    session['lang'] = lang
-    
     if request.method == 'POST':
-        # Debug log
-        current_app.logger.info("Processing upload form submission")
-        current_app.logger.info(f"Files in request: {list(request.files.keys())}")
-        
-        # Check if CV file is uploaded
-        if 'cv_file' not in request.files:
-            flash('Please upload your CV/Resume', 'error')
-            return redirect(request.url)
-            
-        cv_file = request.files['cv_file']
-        
-        # Check if CV filename is empty
-        if cv_file.filename == '':
-            flash('No CV/Resume file selected', 'error')
+        # Check if both files were uploaded
+        if 'resume' not in request.files or 'jobDescription' not in request.files:
+            flash('Both resume and job description files are required', 'error')
             return redirect(request.url)
         
-        # Validate CV file
-        if not allowed_file(cv_file.filename):
-            flash('Please upload your CV in PDF format', 'error')
+        resume_file = request.files['resume']
+        job_file = request.files['jobDescription']
+        
+        # Check if files are selected
+        if resume_file.filename == '' or job_file.filename == '':
+            flash('Please select both files', 'error')
             return redirect(request.url)
-            
+        
+        # Check if files have allowed extensions
+        if not (allowed_file(resume_file.filename) and allowed_file(job_file.filename)):
+            flash('Invalid file format. Please use PDF or DOCX files.', 'error')
+            return redirect(request.url)
+        
         try:
-            # Generate report ID
-            report_id = generate_report_id()
+            # Save resume file
+            resume_filename = secure_filename(resume_file.filename)
+            resume_path = os.path.join(current_app.config['UPLOAD_FOLDER'], resume_filename)
+            resume_file.save(resume_path)
             
-            # Create uploads directory if it doesn't exist
-            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+            # Save job description file
+            job_filename = secure_filename(job_file.filename)
+            job_path = os.path.join(current_app.config['UPLOAD_FOLDER'], job_filename)
+            job_file.save(job_path)
             
-            # Process CV file
-            cv_filename = secure_filename(cv_file.filename)
-            cv_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], f"cv_{report_id}_{cv_filename}")
-            cv_file.save(cv_filepath)
+            # Extract text from files
+            resume_text = extract_pdf_text(resume_path)
+            job_text = extract_pdf_text(job_path)
             
-            # Extract text from CV
-            current_app.logger.info(f"Extracting text from CV: {cv_filepath}")
-            cv_text = extract_pdf_text(cv_filepath)
+            # Generate a unique report ID
+            report_id = str(uuid.uuid4())
             
-            if not cv_text or len(cv_text) < 10:
-                current_app.logger.error(f"Failed to extract text from CV or CV is too short")
-                flash('Could not extract text from your CV. Please ensure it is a valid PDF with text content.', 'error')
-                return redirect(request.url)
+            # Process with AI service to generate analysis
+            analysis_result = query_openrouter(resume_text, job_text)
             
-            current_app.logger.info(f"Successfully extracted {len(cv_text)} characters from CV")
+            # Create report object
+            report = {
+                'id': report_id,
+                'date': datetime.now().strftime('%d %b %Y, %H:%M'),
+                'job_title': 'Software Engineer',  # You would extract this from the job description
+                'score': 85,  # This would come from your analysis
+                'company': 'Tech Corp',  # You would extract this from the job description
+                'stats': {
+                    'keyword_match': 80,
+                    'skill_match': 85,
+                    'experience_match': 90,
+                    'education_match': 75
+                },
+                'sections': {
+                    'summary': '<p>Strong match for the position with excellent technical skills.</p>',
+                    'keyword_analysis': '<p>Your resume matches 80% of the required keywords.</p>',
+                    'skills_gap': '<p>Consider adding experience with Kubernetes.</p>',
+                    'ats_compatibility': '<p>Your resume is ATS-friendly.</p>',
+                    'recommendations': '<p>Highlight your cloud experience more prominently.</p>',
+                    'improved_resume': '<p>See the optimized version of your resume.</p>'
+                }
+            }
             
-            # Get job description from file or text input
-            jd_text = ""
-            jd_filename = ""
+            # Store the report in session for retrieval in the report view
+            # In a real application, you'd save this to a database instead
+            current_app.logger.info(f"Storing report {report_id} in session")
+            if 'reports' not in session:
+                session['reports'] = {}
+            session['reports'][report_id] = report
+            session.modified = True
             
-            if 'jd_file' in request.files and request.files['jd_file'].filename != '':
-                jd_file = request.files['jd_file']
-                jd_filename = secure_filename(jd_file.filename)
-                jd_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], f"jd_{report_id}_{jd_filename}")
-                jd_file.save(jd_filepath)
-                jd_text = extract_pdf_text(jd_filepath)
-            elif 'jd_text' in request.form and request.form['jd_text'].strip():
-                jd_text = request.form['jd_text'].strip()
-                jd_filename = "manual_entry.txt"
+            # Redirect to the report view
+            return redirect(url_for('analysis.view_report', report_id=report_id))
             
-            # Store data in session
-            session['cv_text'] = cv_text
-            session['cv_filename'] = cv_filename
-            session['report_id'] = report_id
-            
-            if jd_text:
-                session['jd_text'] = jd_text
-                session['jd_filename'] = jd_filename
-                
-                # Log successful upload with both CV and JD
-                current_app.logger.info(f"Successfully uploaded CV and JD. Report ID: {report_id}")
-                flash('Files uploaded successfully! Analyzing CV-Job match.', 'success')
-                return redirect(url_for('analysis.analyze', report_id=report_id, analysis_type='cv_jd_match'))
-            else:
-                # Log successful upload with CV only
-                current_app.logger.info(f"Successfully uploaded CV only. Report ID: {report_id}")
-                flash('CV uploaded successfully! Performing basic CV analysis.', 'success')
-                return redirect(url_for('analysis.analyze', report_id=report_id, analysis_type='cv_only'))
-                
         except Exception as e:
-            current_app.logger.error(f"Error processing upload: {str(e)}")
-            flash(f"An error occurred during file processing: {str(e)}", 'error')
+            current_app.logger.error(f"Error processing files: {str(e)}")
+            flash(f'Error processing files: {str(e)}', 'error')
             return redirect(request.url)
     
-    return render_template('upload.html', lang=lang)
-
-@analysis_bp.route('/analyze/<report_id>', methods=['GET', 'POST'])
-@login_required
-def analyze(report_id):
-    """Process the uploaded files and show analysis options or results"""
-    # Get language preference from session
-    lang = session.get('lang', 'en')
-    
-    # Check if necessary data is in session
-    if 'cv_text' not in session or not session.get('cv_text'):
-        flash('No CV content found. Please upload your CV again.', 'warning')
-        return redirect(url_for('analysis.upload', lang=lang))
-    
-    # For GET requests, immediately process the analysis without showing the form
-    # Retrieve session data
-    cv_text = session.get('cv_text', '')
-    cv_filename = session.get('cv_filename', 'document.pdf')
-    jd_text = session.get('jd_text', '')
-    jd_filename = session.get('jd_filename', '')
-    
-    # Determine analysis type
-    analysis_type = request.args.get('analysis_type', 'cv_only')
-    if request.method == 'POST':
-        analysis_type = request.form.get('analysis_type', 'cv_only')
-    
-    # Log analysis attempt
-    current_app.logger.info(f"Starting analysis for report_id: {report_id}, type: {analysis_type}")
-    current_app.logger.info(f"CV: {cv_filename} ({len(cv_text)} chars)")
-    if jd_text:
-        current_app.logger.info(f"JD: {jd_filename} ({len(jd_text)} chars)")
-    
-    try:
-        # Perform analysis based on type
-        if analysis_type == 'cv_only' or not jd_text:
-            # Basic CV analysis when no job description available
-            result = query_openrouter(cv_text, "ats_cv_analysis", lang)
-        else:
-            # CV-JD match analysis
-            result = analyze_cv_with_jd(cv_text, jd_text, lang)
-        
-        if not result or "Error:" in result:
-            raise Exception(f"Analysis failed: {result}")
-        
-        # Save results to file
-        os.makedirs(current_app.config['REPORTS_FOLDER'], exist_ok=True)
-        report_path = os.path.join(current_app.config['REPORTS_FOLDER'], f"{report_id}.json")
-        report_data = {
-            'cv_filename': cv_filename,
-            'jd_filename': jd_filename if jd_text else None,
-            'analysis_type': analysis_type,
-            'result': result,
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        with open(report_path, 'w') as f:
-            json.dump(report_data, f)
-        
-        current_app.logger.info(f"Analysis complete and saved to {report_path}")
-        
-        # Add report to user's profile if logged in
-        if 'user_email' in session:
-            add_report_to_user(session['user_email'], report_id)
-            current_app.logger.info(f"Report {report_id} saved to user profile: {session['user_email']}")
-        
-        # Redirect to report page
-        return redirect(url_for('analysis.report', report_id=report_id))
-        
-    except Exception as e:
-        current_app.logger.error(f"Analysis error: {str(e)}")
-        flash(f"An error occurred during analysis: {str(e)}", 'error')
-        return redirect(url_for('analysis.upload', lang=lang))
-    
-    # This line should only be reached if something unexpected happens
-    # But we'll render the loading/processing page just in case
-    return render_template('analyze.html', report_id=report_id, lang=lang)
+    # GET request - show upload form
+    return render_template('upload.html', lang={
+        'upload_header': 'Upload Documents for Analysis'
+    })
 
 @analysis_bp.route('/report/<report_id>')
-@login_required
-def report(report_id):
-    """Display the analysis report"""
-    # Get language preference from session
-    lang = session.get('lang', 'en')
+def view_report(report_id):
+    # In a real application, you would retrieve the report from your database
+    # For this example, we're retrieving from session
+    reports = session.get('reports', {})
+    report = reports.get(report_id)
     
-    report_path = os.path.join(current_app.config['REPORTS_FOLDER'], f"{report_id}.json")
-    
-    if not os.path.exists(report_path):
+    if not report:
         flash('Report not found', 'error')
-        return redirect(url_for('main.index'))
-        
-    with open(report_path, 'r') as f:
-        report_data = json.load(f)
+        return redirect(url_for('analysis.upload'))
     
-    # Create a simple template for now, later you can make it more sophisticated
-    return render_template('report.html', report=report_data, lang=lang)
+    return render_template('report.html', report=report)
 
-@analysis_bp.route('/process', methods=['POST'])
-@login_required
-def process():
-    """Handle direct processing of CV and job description"""
-    # Get language preference
-    lang = request.form.get('lang', 'en')
-    
-    # Check if CV file is uploaded
-    if 'cv_file' not in request.files:
-        flash('Please upload your CV/Resume', 'error')
-        return redirect(url_for('analysis.upload', lang=lang))
-        
-    cv_file = request.files['cv_file']
-    
-    # Check if CV filename is empty
-    if cv_file.filename == '':
-        flash('No CV/Resume file selected', 'error')
-        return redirect(url_for('analysis.upload', lang=lang))
-    
-    # Validate CV file
-    if not allowed_file(cv_file.filename):
-        flash('Please upload your CV in PDF format', 'error')
-        return redirect(url_for('analysis.upload', lang=lang))
-        
+@analysis_bp.route('/download_pdf/<report_id>')
+def download_pdf(report_id):
+    """Generate and download a PDF version of the report"""
     try:
-        # Generate report ID
-        report_id = generate_report_id()
-        current_app.logger.info(f"Processing files for report ID: {report_id}")
+        # Get report data
+        reports = session.get('reports', {})
+        report = reports.get(report_id)
         
-        # Create uploads directory if it doesn't exist
-        os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+        if not report:
+            flash('Report not found', 'error')
+            return redirect(url_for('analysis.upload'))
         
-        # Process CV file
-        cv_filename = secure_filename(cv_file.filename)
-        cv_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], f"cv_{report_id}_{cv_filename}")
-        cv_file.save(cv_filepath)
+        # In a real app, you would generate a PDF here using a library like WeasyPrint, pdfkit, etc.
+        # For this demo, we'll just create a simple text file
         
-        # Extract text from CV
-        cv_text = extract_pdf_text(cv_filepath)
+        pdf_content = f"""
+        Analysis Report
+        ==============
         
-        if not cv_text or len(cv_text) < 10:
-            current_app.logger.error(f"Failed to extract text from CV or CV is too short")
-            flash('Could not extract text from your CV. Please ensure it is a valid PDF with text content.', 'error')
-            return redirect(url_for('analysis.upload', lang=lang))
-            
-        current_app.logger.info(f"Extracted {len(cv_text)} chars from CV: {cv_filename}")
+        Date: {report['date']}
+        Job Title: {report['job_title']}
+        Company: {report['company']}
+        Overall Score: {report['score']}%
         
-        # Get job description from file or text input
-        jd_text = ""
-        jd_filename = ""
+        Executive Summary
+        ----------------
+        {report['sections']['summary']}
         
-        if 'jd_file' in request.files and request.files['jd_file'].filename != '':
-            jd_file = request.files['jd_file']
-            jd_filename = secure_filename(jd_file.filename)
-            jd_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], f"jd_{report_id}_{jd_filename}")
-            jd_file.save(jd_filepath)
-            jd_text = extract_pdf_text(jd_filepath)
-            current_app.logger.info(f"Extracted {len(jd_text)} chars from JD: {jd_filename}")
-        elif 'jd_text' in request.form and request.form['jd_text'].strip():
-            jd_text = request.form['jd_text'].strip()
-            jd_filename = "manual_entry.txt"
-            current_app.logger.info(f"Received {len(jd_text)} chars of JD text from form")
+        Keyword Analysis
+        ---------------
+        {report['sections']['keyword_analysis']}
         
-        # Determine analysis type based on inputs
-        analysis_type = 'cv_jd_match' if jd_text else 'cv_only'
+        Skills Gap Analysis
+        -----------------
+        {report['sections']['skills_gap']}
         
-        # Perform analysis immediately
-        current_app.logger.info(f"Starting {analysis_type} analysis...")
+        ATS Compatibility
+        ---------------
+        {report['sections']['ats_compatibility']}
         
-        if analysis_type == 'cv_only':
-            result = query_openrouter(cv_text, "ats_cv_analysis", lang)
-        else:
-            result = analyze_cv_with_jd(cv_text, jd_text, lang)
-            
-        if not result or "Error:" in result:
-            raise Exception(f"Analysis failed: {result}")
+        Recommendations
+        -------------
+        {report['sections']['recommendations']}
+        """
         
-        # Save results to file
-        os.makedirs(current_app.config['REPORTS_FOLDER'], exist_ok=True)
-        report_path = os.path.join(current_app.config['REPORTS_FOLDER'], f"{report_id}.json")
-        report_data = {
-            'cv_filename': cv_filename,
-            'jd_filename': jd_filename if jd_text else None,
-            'analysis_type': analysis_type,
-            'result': result,
-            'timestamp': datetime.now().isoformat()
-        }
+        # Create a BytesIO object for the file
+        pdf_io = io.BytesIO()
+        pdf_io.write(pdf_content.encode('utf-8'))
+        pdf_io.seek(0)
         
-        with open(report_path, 'w') as f:
-            json.dump(report_data, f)
-        
-        current_app.logger.info(f"Analysis completed and saved to {report_path}")
-        
-        # Add report to user's profile
-        if 'user_email' in session:
-            add_report_to_user(session['user_email'], report_id)
-            current_app.logger.info(f"Report {report_id} saved to user profile: {session['user_email']}")
-        
-        # Return success and redirect to report
-        flash('Analysis complete!', 'success')
-        return redirect(url_for('analysis.report', report_id=report_id))
+        return send_file(
+            pdf_io,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'resume_analysis_report_{report_id}.pdf'
+        )
         
     except Exception as e:
-        current_app.logger.error(f"Process error: {str(e)}")
-        flash(f"An error occurred during processing: {str(e)}", 'error')
-        return redirect(url_for('analysis.upload', lang=lang))
+        current_app.logger.error(f"Error generating PDF: {str(e)}")
+        flash(f'Error generating PDF: {str(e)}', 'error')
+        return redirect(url_for('analysis.view_report', report_id=report_id))
+
+@analysis_bp.route('/download_improved_resume/<report_id>')
+def download_improved_resume(report_id):
+    """Download the improved resume"""
+    try:
+        # Get report data
+        reports = session.get('reports', {})
+        report = reports.get(report_id)
+        
+        if not report:
+            flash('Report not found', 'error')
+            return redirect(url_for('analysis.upload'))
+        
+        # In a real app, you would generate an improved resume DOCX file
+        # For this demo, we'll create a simple text file
+        
+        resume_content = f"""
+        IMPROVED RESUME
+        ==============
+        
+        Based on job: {report['job_title']} at {report['company']}
+        
+        This is an improved version of your resume with the following enhancements:
+        
+        1. Added keywords highlighted in the job description
+        2. Improved formatting for better ATS compatibility
+        3. Emphasized relevant skills and experiences
+        4. Addressed the skills gaps mentioned in our analysis
+        
+        {report['sections']['improved_resume']}
+        """
+        
+        # Create a BytesIO object for the file
+        resume_io = io.BytesIO()
+        resume_io.write(resume_content.encode('utf-8'))
+        resume_io.seek(0)
+        
+        return send_file(
+            resume_io,
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            as_attachment=True,
+            download_name=f'improved_resume_{report_id}.docx'
+        )
+        
+    except Exception as e:
+        current_app.logger.error(f"Error generating improved resume: {str(e)}")
+        flash(f'Error generating improved resume: {str(e)}', 'error')
+        return redirect(url_for('analysis.view_report', report_id=report_id))

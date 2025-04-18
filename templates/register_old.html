@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Register - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="register.title">Create Account</h2>
+    <p class="page-subtitle" data-i18n="register.subtitle">Join The Metric to track your resume improvements</p>
+  </div>
+
+  <div class="analysis-card">
+    {% if error %}
+      <div class="error-message">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+    
+    <form action="{{ url_for('auth.register') }}" method="post">
+      <div class="form-group">
+        <label class="form-label" for="name" data-i18n="register.name.label">Full Name</label>
+        <input type="text" class="form-control" name="name" id="name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email" data-i18n="register.email.label">Email</label>
+        <input type="email" class="form-control" name="email" id="email" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password" data-i18n="register.password.label">Password</label>
+        <input type="password" class="form-control" name="password" id="password" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="confirm_password" data-i18n="register.confirm.label">Confirm Password</label>
+        <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+      </div>
+      
+      <div class="form-group">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" name="agree_terms" id="agree_terms" required>
+          <label class="form-check-label" for="agree_terms" data-i18n="register.terms">I agree to the Terms of Service and Privacy Policy</label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-user-plus"></i>
+          <span data-i18n="register.button">Create Account</span>
+        </button>
+      </div>
+
+      <div class="text-center mt-4">
+        <p>
+          <span data-i18n="register.have_account">Already have an account?</span>
+          <a href="{{ url_for('auth.login') }}" data-i18n="register.login">Login</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations for this page
+  Object.keys(translations).forEach(lang => {
+    translations[lang] = {
+      ...translations[lang],
+      "register.title": lang === 'fr' ? "Créer un Compte" : "Create Account",
+      "register.subtitle": lang === 'fr' ? "Rejoignez The Metric pour suivre vos améliorations de CV" : "Join The Metric to track your resume improvements",
+      "register.name.label": lang === 'fr' ? "Nom Complet" : "Full Name",
+      "register.email.label": lang === 'fr' ? "Email" : "Email",
+      "register.password.label": lang === 'fr' ? "Mot de passe" : "Password",
+      "register.confirm.label": lang === 'fr' ? "Confirmer le mot de passe" : "Confirm Password",
+      "register.terms": lang === 'fr' ? "J'accepte les Conditions d'utilisation et la Politique de confidentialité" : "I agree to the Terms of Service and Privacy Policy",
+      "register.button": lang === 'fr' ? "Créer un Compte" : "Create Account",
+      "register.have_account": lang === 'fr' ? "Vous avez déjà un compte ?" : "Already have an account?",
+      "register.login": lang === 'fr' ? "Se connecter" : "Login"
+    };
+  });
+</script>
+{% endblock %}

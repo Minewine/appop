@@ -1,46 +1,74 @@
-<!DOCTYPE html>
-<html lang="{{ lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Dashboard</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Reports Overview</h2>
-            {% if reports %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Filename</th>
-                            <th>Analysis Type</th>
-                            <th>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for report in reports %}
-                        <tr>
-                            <td>{{ report.id }}</td>
-                            <td>{{ report.filename }}</td>
-                            <td>{{ report.analysis_type }}</td>
-                            <td>{{ report.timestamp }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No reports available.</p>
-            {% endif %}
-        </section>
-    </main>
-    <footer>
-        <p>&copy; {{ current_year }} AppOp Demo</p>
-    </footer>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Dashboard - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="dashboard.title">Dashboard</h2>
+    <p class="page-subtitle" data-i18n="dashboard.subtitle">Reports Overview</p>
+  </div>
+  
+  <div class="analysis-card animate-fade-in">
+    {% if reports %}
+      <div class="responsive-table">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="dashboard.id">ID</th>
+              <th data-i18n="dashboard.filename">Filename</th>
+              <th data-i18n="dashboard.analysis_type">Analysis Type</th>
+              <th data-i18n="dashboard.timestamp">Timestamp</th>
+              <th data-i18n="dashboard.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for report in reports %}
+            <tr class="report-row animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+              <td>{{ report.id }}</td>
+              <td>{{ report.filename }}</td>
+              <td>{{ report.analysis_type }}</td>
+              <td>{{ report.timestamp }}</td>
+              <td>
+                <a href="{{ url_for('analysis.view_report', report_id=report.id) }}" class="btn btn-sm btn-outline">
+                  <i class="fa-solid fa-eye"></i> <span data-i18n="dashboard.view">View</span>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="no-reports">
+        <i class="fa-solid fa-file-circle-xmark"></i>
+        <h3 data-i18n="dashboard.no_reports">No Reports Available</h3>
+        <p data-i18n="dashboard.no_reports_desc">You haven't generated any analysis reports yet.</p>
+        <a href="{{ url_for('analysis.upload') }}" class="btn btn-primary" data-i18n="dashboard.create_report">Create a Report</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations for this page
+  Object.keys(translations).forEach(lang => {
+    translations[lang] = {
+      ...translations[lang],
+      "dashboard.title": lang === 'fr' ? "Tableau de Bord" : "Dashboard",
+      "dashboard.subtitle": lang === 'fr' ? "Aperçu des Rapports" : "Reports Overview",
+      "dashboard.id": lang === 'fr' ? "ID" : "ID",
+      "dashboard.filename": lang === 'fr' ? "Nom du Fichier" : "Filename",
+      "dashboard.analysis_type": lang === 'fr' ? "Type d'Analyse" : "Analysis Type",
+      "dashboard.timestamp": lang === 'fr' ? "Date" : "Timestamp",
+      "dashboard.actions": lang === 'fr' ? "Actions" : "Actions",
+      "dashboard.view": lang === 'fr' ? "Voir" : "View",
+      "dashboard.no_reports": lang === 'fr' ? "Aucun Rapport Disponible" : "No Reports Available",
+      "dashboard.no_reports_desc": lang === 'fr' ? "Vous n'avez pas encore généré de rapports d'analyse." : "You haven't generated any analysis reports yet.",
+      "dashboard.create_report": lang === 'fr' ? "Créer un Rapport" : "Create a Report"
+    };
+  });
+</script>
+{% endblock %}

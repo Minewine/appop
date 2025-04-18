@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Analysis - The Metric{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="analysis.title">Resume Analysis</h2>
+    <p class="page-subtitle" data-i18n="analysis.subtitle">Your match score and personalized recommendations</p>
+  </div>
+
+  <div class="analysis-card">
+    <div class="score-container">
+      <div class="score-circle">
+        <svg viewBox="0 0 100 100">
+          <circle class="score-bg" cx="50" cy="50" r="45"></circle>
+          <circle class="score-value {% if score < 50 %}score-low{% elif score < 75 %}score-medium{% else %}score-high{% endif %}" cx="50" cy="50" r="45" id="score-circle"></circle>
+        </svg>
+        <div class="score-text {% if score < 50 %}score-low{% elif score < 75 %}score-medium{% else %}score-high{% endif %}" id="score-text">{{ score }}</div>
+      </div>
+      <p class="score-label" data-i18n="analysis.match">Match Score</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="keyword-match">{{ stats.keyword_match }}%</div>
+        <div class="stat-label" data-i18n="analysis.keywords">Keywords Match</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="skill-match">{{ stats.skill_match }}%</div>
+        <div class="stat-label" data-i18n="analysis.skills">Skills Match</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="experience-match">{{ stats.experience_match }}%</div>
+        <div class="stat-label" data-i18n="analysis.experience">Experience Match</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="education-match">{{ stats.education_match }}%</div>
+        <div class="stat-label" data-i18n="analysis.education">Education Match</div>
+      </div>
+    </div>
+
+    <div class="markdown-body">
+      <h3 data-i18n="analysis.recommendations">Recommendations</h3>
+      <div id="recommendations">{{ recommendations|safe }}</div>
+    </div>
+
+    <div class="actions">
+      <a href="{{ url_for('download_report') }}" class="btn btn-primary action-btn">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span data-i18n="analysis.download">Download Full Report</span>
+      </a>
+      <a href="{{ url_for('upload') }}" class="btn btn-outline action-btn">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        <span data-i18n="analysis.new">Start New Analysis</span>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Circle animation
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      const scoreCircle = document.getElementById('score-circle');
+      if (scoreCircle) {
+        const scoreValue = parseInt(document.getElementById('score-text').textContent);
+        const circumference = 2 * Math.PI * 45;
+        const offset = circumference - (scoreValue / 100) * circumference;
+        scoreCircle.style.strokeDasharray = circumference + " " + circumference;
+        scoreCircle.style.strokeDashoffset = circumference;
+        
+        // Trigger reflow to ensure animation works
+        scoreCircle.getBoundingClientRect();
+        
+        // Set the final offset
+        scoreCircle.style.strokeDashoffset = offset;
+      }
+    }, 500);
+  });
+
+  // Add translations for this page
+  Object.keys(translations).forEach(lang => {
+    translations[lang] = {
+      ...translations[lang],
+      "analysis.title": lang === 'fr' ? "Analyse du CV" : "Resume Analysis",
+      "analysis.subtitle": lang === 'fr' ? "Votre score de compatibilité et des recommandations personnalisées" : "Your match score and personalized recommendations",
+      "analysis.match": lang === 'fr' ? "Score de Compatibilité" : "Match Score",
+      "analysis.keywords": lang === 'fr' ? "Correspondance des Mots-clés" : "Keywords Match",
+      "analysis.skills": lang === 'fr' ? "Correspondance des Compétences" : "Skills Match",
+      "analysis.experience": lang === 'fr' ? "Correspondance d'Expérience" : "Experience Match",
+      "analysis.education": lang === 'fr' ? "Correspondance de Formation" : "Education Match",
+      "analysis.recommendations": lang === 'fr' ? "Recommandations" : "Recommendations",
+      "analysis.download": lang === 'fr' ? "Télécharger le Rapport Complet" : "Download Full Report",
+      "analysis.new": lang === 'fr' ? "Démarrer Nouvelle Analyse" : "Start New Analysis"
+    };
+  });
+</script>
+{% endblock %}

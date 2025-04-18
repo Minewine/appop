@@ -1,52 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang|default('en') }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 - Server Error</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-            background-color: #f8f9fa;
-        }
-        .error-container {
-            max-width: 600px;
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .error-code {
-            font-size: 72px;
-            font-weight: 700;
-            color: #dc3545;
-            margin-bottom: 10px;
-            line-height: 1;
-        }
-        .home-link {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>500 - Server Error | The Metric</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    <div class="error-container">
-        <div class="error-code">500</div>
-        <h1 class="mb-4">Internal Server Error</h1>
-        <p class="lead mb-4">Something went wrong on our end. Our team has been notified and is working on the issue.</p>
-        <p>Please try again later or return to the home page.</p>
-        <div class="home-link">
-            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Home</a>
-        </div>
+  <header>
+    <h1 data-i18n="The Metric">The Metric</h1>
+    <p class="tagline" data-i18n="tagline">We craft CVs that beat the bots—and prep you to shine in any interview.</p>
+    <div class="lang-switch">
+      <span data-i18n="lang.label">Language:</span>
+      <button onclick="setLang('en')" data-lang="en">English</button>
+      <button onclick="setLang('fr')" data-lang="fr">Français</button>
     </div>
-    <footer class="mt-5 text-muted">
-        <p>&copy; {{ current_year }} AppOp Demo</p>
-    </footer>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="error-container">
+        <div class="error-icon">
+          <i class="fa-solid fa-server"></i>
+        </div>
+        <h1 class="error-code">500</h1>
+        <h2 class="error-message" data-i18n="error.500.title">Server Error</h2>
+        <p class="error-description" data-i18n="error.500.message">Sorry, something went wrong on our end. Our team has been notified and is working to fix the issue.</p>
+        <div class="error-actions">
+          <a href="{{ url_for('main.index') }}" class="cta-button primary">
+            <i class="fa-solid fa-house"></i> <span data-i18n="error.home">Go to Homepage</span>
+          </a>
+          <a href="javascript:history.back()" class="cta-button secondary">
+            <i class="fa-solid fa-arrow-left"></i> <span data-i18n="error.back">Go Back</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      © <span id="current-year">2024</span> <span data-i18n="The Metric">The Metric</span>. <span data-i18n="footer.rights">All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    // --- Translations Object ---
+    const translations = {
+      en: {
+        "The Metric": "The Metric",
+        "tagline": "We craft CVs that beat the bots—and prep you to shine in any interview.",
+        "lang.label": "Language:",
+        "error.500.title": "Server Error",
+        "error.500.message": "Sorry, something went wrong on our end. Our team has been notified and is working to fix the issue.",
+        "error.home": "Go to Homepage",
+        "error.back": "Go Back",
+        "footer.rights": "All rights reserved."
+      },
+      fr: {
+        "The Metric": "Le Metric",
+        "tagline": "Nous créons des CV qui surpassent les filtres ATS et vous préparons à briller en entretien.",
+        "lang.label": "Langue :",
+        "error.500.title": "Erreur Serveur",
+        "error.500.message": "Désolé, une erreur s'est produite de notre côté. Notre équipe a été notifiée et travaille pour résoudre le problème.",
+        "error.home": "Aller à l'Accueil",
+        "error.back": "Retour",
+        "footer.rights": "Tous droits réservés."
+      }
+    };
+
+    // --- Language Switching Function ---
+    function setLang(lang) {
+      // Ensure the requested language exists in translations, fallback to 'en'
+      const effectiveLang = translations[lang] ? lang : 'en';
+      localStorage.setItem('lang', effectiveLang);
+      document.documentElement.lang = effectiveLang;
+
+      const dictionary = translations[effectiveLang];
+      const defaultDictionary = translations['en']; // English for fallback
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        let text;
+
+        // Try to get text from the selected language dictionary
+        if (dictionary) {
+            text = dictionary[key];
+        }
+
+        // If not found in the target language, try the English fallback dictionary
+        if (text === undefined && defaultDictionary) {
+            text = defaultDictionary[key];
+        }
+
+        // If still not found, use original text content as a last resort
+        if (text === undefined) {
+            text = (el.tagName === 'INPUT' && el.type === 'submit') ? el.value : el.textContent;
+        }
+
+        // Update element content
+        el.textContent = text;
+      });
+
+      // Update active button style
+      document.querySelectorAll('.lang-switch button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === effectiveLang);
+      });
+    }
+
+    // --- Set Current Year in Footer ---
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+
+    // --- Initial Language Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+      let preferredLang = localStorage.getItem('lang');
+      if (!preferredLang) {
+          const browserLang = navigator.language.split('-')[0];
+          preferredLang = translations[browserLang] ? browserLang : 'en';
+      }
+      setLang(preferredLang);
+    });
+  </script>
 </body>
 </html>

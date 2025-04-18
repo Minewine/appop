@@ -38,14 +38,21 @@ def is_running_under_passenger():
 migrate = Migrate()
 
 def create_app(config_class=Config):
-    app = Flask(__name__, static_url_path=f"{Config.APPLICATION_ROOT}/static")
+    # Get APPLICATION_ROOT from environment or config
+    application_root = os.environ.get('APPLICATION_ROOT', config_class.APPLICATION_ROOT)
+    
+    # Ensure static URL path is properly configured with APPLICATION_ROOT
+    app = Flask(__name__, static_url_path=f"{application_root}/static")
     app.config.from_object(config_class)
+    
+    # Explicitly set APPLICATION_ROOT from environment if available
+    app.config['APPLICATION_ROOT'] = application_root
 
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Set the script name for URL generation
+    # Set the script name for URL generation - this helps with reverse proxies
     app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
     # Configure session to use filesystem
@@ -102,19 +109,17 @@ def create_app(config_class=Config):
         app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     else:
         # For development - explicitly include /appop prefix
-        app_root = app.config.get('APPLICATION_ROOT', '/appop')
+        app_root = app.config['APPLICATION_ROOT']
         app.register_blueprint(main_bp, url_prefix=app_root)
         app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
         app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
         app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
     
-    
-
     # Add context processor to inject app_root into all templates
     @app.context_processor
     def inject_app_root():
         is_passenger = is_running_under_passenger()
-        app_root = '' if is_passenger else app.config.get('APPLICATION_ROOT', '/appop')
+        app_root = '' if is_passenger else app.config['APPLICATION_ROOT']
         return dict(app_root=app_root, is_passenger=is_passenger)
 
     # Error handlers
@@ -153,7 +158,8 @@ def redirect_to_appop():
 
 @app.route('/show_app_root')
 def show_app_root():
-    return f"app_root: {app.config.get('APPLICATION_ROOT', '/appop')}"
+    app_root = app.config.get('APPLICATION_ROOT')
+    return f"app_root: {app_root} (from environment: {os.environ.get('APPLICATION_ROOT', 'not set')})"
 
 # --- Main Execution Block ---
 if __name__ == '__main__':

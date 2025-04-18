@@ -321,9 +321,11 @@
   // Navigation function
   function goToUploadPage() {
     const currentLang = localStorage.getItem('lang') || 'en';
-    const authPath = `${APP_ROOT}/auth/login`;
-    const uploadPath = `${APP_ROOT}/analysis/upload`;
+    // Use hardcoded path instead of APP_ROOT variable to ensure consistency
+    const authPath = "/appop/auth/login";
+    const uploadPath = "/appop/analysis/upload";
     const loginUrl = authPath + "?next=" + encodeURIComponent(uploadPath) + "&lang=" + currentLang;
+    console.log("DEBUG: Redirecting to:", loginUrl); // Add debugging
     window.location.href = loginUrl;
   }
 </script>

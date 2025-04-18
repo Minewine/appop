@@ -24,7 +24,7 @@
           </thead>
           <tbody>
             {% for report in reports %}
-            <tr class="report-row animate-slide-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <tr class="report-row animate-slide-up delay-{{ loop.index0 }}">
               <td>{{ report.id }}</td>
               <td>{{ report.filename }}</td>
               <td>{{ report.analysis_type }}</td>

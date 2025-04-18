@@ -1,5 +1,5 @@
 # --- Imports --- 
-from flask import Flask, request, render_template, url_for, redirect, flash, jsonify, session, current_app
+from flask import Flask, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
@@ -25,6 +25,11 @@ from services.ai_service import query_openrouter
 from services.utils import allowed_file, generate_report_id
 from services.database import db, migrate_json_to_db
 from blueprints.analysis import analysis_bp
+# Import as much as possible, but comment out what doesn't exist yet
+# from blueprints.auth import auth_bp  # Auth blueprint should be in blueprints directory
+from blueprints.main import main_bp
+from blueprints.dashboard import dashboard_bp
+from blueprints.contact_routes import contact_bp
 
 # --- Load Environment Variables ---
 load_dotenv() # Load variables from .env file
@@ -38,80 +43,26 @@ def is_running_under_passenger():
 migrate = Migrate()
 
 def create_app(config_class=Config):
-    # Get APPLICATION_ROOT from environment or config
-    application_root = os.environ.get('APPLICATION_ROOT', config_class.APPLICATION_ROOT)
-    
-    # Ensure static URL path is properly configured with APPLICATION_ROOT
-    app = Flask(__name__, static_url_path=f"{application_root}/static")
+    """Create and configure the Flask application"""
+    app = Flask(__name__)
     app.config.from_object(config_class)
     
-    # Explicitly set APPLICATION_ROOT from environment if available
-    app.config['APPLICATION_ROOT'] = application_root
-
-    # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-
-    # Set the script name for URL generation - this helps with reverse proxies
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
-
-    # Configure session to use filesystem
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.secret_key = app.config['SECRET_KEY']  # Ensure this is set in your config
-    
-    # Initialize cache
-    cache = Cache(app)
-    
-    # Initialize rate limiter
-    limiter = Limiter(
-        get_remote_address,
-        app=app,
-        default_limits=[app.config['RATELIMIT_DEFAULT']],
-        storage_uri=app.config['RATELIMIT_STORAGE_URI']
-    )
-    
-    # Create required directories if they don't exist
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['REPORTS_FOLDER'], exist_ok=True)
-    
-    # Set up logging to file
-    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
-    os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, 'app.log')
-    
-    file_handler = RotatingFileHandler(log_file, maxBytes=10485760, backupCount=5)
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-    ))
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('App startup')
-    
-    # Create database tables
-    with app.app_context():
-        db.create_all()
-        # Migrate existing JSON data to the database if needed
-        migrate_json_to_db(app)
-    
     # Register blueprints
-    from blueprints.main import main_bp
-    from blueprints.dashboard import dashboard_bp
-    from blueprints.auth import auth_bp
-
     # In production (Passenger), the web server adds /appop to all URLs
     # In development, we need to add it ourselves
     if is_running_under_passenger():
         # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
         app.register_blueprint(main_bp, url_prefix='')
-        app.register_blueprint(auth_bp, url_prefix='/auth')
-        app.register_blueprint(analysis_bp, url_prefix='/analysis')
-        app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+        # app.register_blueprint(auth_bp, url_prefix='/appop/auth')  # Commented out until auth_bp is properly imported
+        app.register_blueprint(contact_bp, url_prefix='/appop')  # Register the contact blueprint
+        app.register_blueprint(analysis_bp, url_prefix='/appop/analysis')
+        app.register_blueprint(dashboard_bp, url_prefix='/appop/dashboard')
     else:
         # For development - explicitly include /appop prefix
         app_root = app.config['APPLICATION_ROOT']
         app.register_blueprint(main_bp, url_prefix=app_root)
-        app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")
+        # app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")  # Commented out until auth_bp is properly imported
+        app.register_blueprint(contact_bp, url_prefix=app_root)  # Fix: Use app_root directly for contact
         app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
         app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
     

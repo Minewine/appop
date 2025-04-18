@@ -111,9 +111,9 @@
     </div>
     
     <div class="actions">
-      <a href="#book-session" class="btn btn-primary" id="book-session" data-i18n="book.button">
-        <i class="fa-solid fa-calendar-check"></i>
-        <span>Book Your Initial Session (CHF 100)</span>
+      <a href="contact" class="btn btn-primary" id="contact-button" data-i18n="contact.button">
+        <i class="fa-solid fa-envelope"></i>
+        <span>Request More Information</span>
       </a>
       <a href="#" onclick="goToUploadPage(); return false;" class="btn btn-outline" data-i18n="test.button">
         <i class="fa-solid fa-vial"></i>
@@ -258,6 +258,7 @@
       "step4.description": "If you land an interview from our applications, we guide you through expert-led prep sessions.",
       "book.button": "Book Your Initial Session (CHF 100)",
       "test.button": "Test the System (Demo)",
+      "contact.button": "Request More Information",
       "testimonials.title": "Client Success Stories",
       "testimonials.intro": "Don't just take our word for it — hear from professionals who've transformed their job search with The Metric.",
       "testimonial1.text": "After months of silence from employers, The Metric helped me optimize my CV. Within two weeks, I had three interview requests. Their systematic approach made all the difference.",
@@ -306,6 +307,7 @@
       "step4.description": "Si vous décrochez un entretien grâce à nos candidatures, nous vous guidons à travers des sessions de préparation expertes.",
       "book.button": "Réserver Votre Session Initiale (CHF 100)",
       "test.button": "Tester le Système (Démo)",
+      "contact.button": "Demander Plus d'Informations",
       "testimonials.title": "Témoignages de Réussite",
       "testimonials.intro": "Ne nous croyez pas sur parole - écoutez les professionnels qui ont transformé leur recherche d'emploi avec The Metric.",
       "testimonial1.text": "Après des mois de silence de la part des employeurs, The Metric m'a aidé à optimiser mon CV. En deux semaines, j'avais trois demandes d'entretien. Leur approche systématique a fait toute la différence.",
@@ -321,12 +323,9 @@
   // Navigation function
   function goToUploadPage() {
     const currentLang = localStorage.getItem('lang') || 'en';
-    // Use hardcoded path instead of APP_ROOT variable to ensure consistency
-    const authPath = "/appop/auth/login";
-    const uploadPath = "/appop/analysis/upload";
-    const loginUrl = authPath + "?next=" + encodeURIComponent(uploadPath) + "&lang=" + currentLang;
-    console.log("DEBUG: Redirecting to:", loginUrl); // Add debugging
-    window.location.href = loginUrl;
+    // Use relative URL for better portability across environments
+    window.location.href = "analysis/upload?lang=" + currentLang;
+    console.log("DEBUG: Redirecting to relative path: analysis/upload"); 
   }
 </script>
 {% endblock %}

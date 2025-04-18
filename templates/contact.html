@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'fr' %}Contactez-nous - The Metric{% else %}Contact Us - The Metric{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title">
+    <h2 data-i18n="contact.heading">Contact Us</h2>
+    <p class="page-subtitle" data-i18n="contact.description">Have questions about our services? Send us a message and we'll get back to you.</p>
+  </div>
+
+  <div class="analysis-card">
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="alert alert-danger">
+      {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if success %}
+    <div class="alert alert-success">
+      {{ success }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('contact.contact', lang=lang) }}">
+      <div class="form-group">
+        <label class="form-label" for="name" data-i18n="contact.name">Your Name</label>
+        <input type="text" class="form-control" id="name" name="name" required value="{{ name if name else '' }}">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="email" data-i18n="contact.email">Email Address</label>
+        <input type="email" class="form-control" id="email" name="email" required value="{{ email if email else '' }}">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="message" data-i18n="contact.message">Your Message</label>
+        <textarea class="form-control" id="message" name="message" rows="5" required>{{ message if message else '' }}</textarea>
+      </div>
+      
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="contact.submit">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Submit</span>
+        </button>
+      </div>
+    </form>
+    
+    <div class="text-center mt-4">
+      <a href="{{ url_for('main.index') }}" class="link-muted" data-i18n="contact.back">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_body %}
+<script>
+  // Add translations for this page
+  Object.keys(translations).forEach(lang => {
+    translations[lang] = {
+      ...translations[lang],
+      "contact.title": lang === 'fr' ? "Contactez-nous - The Metric" : "Contact Us - The Metric",
+      "contact.heading": lang === 'fr' ? "Contactez-nous" : "Contact Us",
+      "contact.description": lang === 'fr' ? "Des questions sur nos services ? Envoyez-nous un message et nous vous répondrons rapidement." : "Have questions about our services? Send us a message and we'll get back to you.",
+      "contact.name": lang === 'fr' ? "Votre Nom" : "Your Name",
+      "contact.email": lang === 'fr' ? "Adresse Email" : "Email Address",
+      "contact.message": lang === 'fr' ? "Votre Message" : "Your Message",
+      "contact.submit": lang === 'fr' ? "Envoyer" : "Submit",
+      "contact.back": lang === 'fr' ? "Retour à l'Accueil" : "Back to Home",
+      "contact.success": lang === 'fr' ? "Votre message a été envoyé avec succès!" : "Your message has been sent successfully!",
+      "contact.error": lang === 'fr' ? "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard." : "There was an error sending your message. Please try again later."
+    };
+  });
+</script>
+{% endblock %}

@@ -479,6 +479,19 @@
     const yearSpan = document.getElementById('current-year');
     if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
 
+    // --- Navigation Function for Upload Page ---
+    function goToUploadPage() {
+      const currentLang = localStorage.getItem('lang') || 'en';
+      // Use absolute URL to ensure consistency across all environments
+      const baseUrl = window.location.origin;
+      const authPath = baseUrl + "/appop/auth/login";
+      const uploadPath = "/appop/analysis/upload";
+      const loginUrl = authPath + "?next=" + encodeURIComponent(uploadPath) + "&lang=" + currentLang;
+      console.log("DEBUG: Base URL:", baseUrl);
+      console.log("DEBUG: Redirecting to:", loginUrl);
+      window.location.href = loginUrl;
+    }
+
     // --- Initial Language Load ---
     document.addEventListener('DOMContentLoaded', () => {
       let preferredLang = localStorage.getItem('lang');

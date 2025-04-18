@@ -50,12 +50,15 @@ def create_app(config_class=Config):
     # Register blueprints
     # In production (Passenger), the web server adds /appop to all URLs
     # In development, we need to add it ourselves
+    app_root = app.config['APPLICATION_ROOT']
+    
     if is_running_under_passenger():
         # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
-        app.register_blueprint(auth_bp, url_prefix=f"{app_root}/auth")  # Uncommented now that auth_bp is imported
-        app.register_blueprint(contact_bp, url_prefix=app_root)  # Fix: Use app_root directly for contact
-        app.register_blueprint(analysis_bp, url_prefix=f"{app_root}/analysis")
-        app.register_blueprint(dashboard_bp, url_prefix=f"{app_root}/dashboard")
+        app.register_blueprint(main_bp, url_prefix='')
+        app.register_blueprint(auth_bp, url_prefix='/appop/auth')  # Explicit path for auth
+        app.register_blueprint(contact_bp, url_prefix='/appop')  # Explicit path for contact
+        app.register_blueprint(analysis_bp, url_prefix='/appop/analysis')
+        app.register_blueprint(dashboard_bp, url_prefix='/appop/dashboard')
     else:
         # For development - explicitly include /appop prefix
         app_root = app.config['APPLICATION_ROOT']

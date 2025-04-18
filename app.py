@@ -53,7 +53,7 @@ def create_app(config_class=Config):
     if is_running_under_passenger():
         # For production - blueprints mounted at root level since Passenger/cPanel adds /appop
         app.register_blueprint(main_bp, url_prefix='')
-        app.register_blueprint(auth_bp, url_prefix='/auth')  # Uncommented now that auth_bp is imported
+        app.register_blueprint(auth_bp, url_prefix='/appop/auth')  # Fixed to match other blueprints
         app.register_blueprint(contact_bp, url_prefix='/appop')  # Register the contact blueprint
         app.register_blueprint(analysis_bp, url_prefix='/appop/analysis')
         app.register_blueprint(dashboard_bp, url_prefix='/appop/dashboard')

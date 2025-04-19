@@ -1,3 +1,5 @@
+--- START OF FILE landing_page.html ---
+
 {% extends "base.html" %}
 
 {% block title %}The Metric – CV Optimization & Interview Coaching{% endblock %}
@@ -12,7 +14,7 @@
       The job market is tougher than ever. Layoffs are rising. Applications vanish into black holes.
       Getting hired requires precision—and that's what we deliver.
     </p>
-    
+
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value">82%</div>
@@ -37,7 +39,7 @@
     <p class="section-intro" data-i18n="services.intro">
       Our tailored services ensure you stand out at every stage of the hiring process.
     </p>
-    
+
     <ul class="features-list">
       <li>
         <i class="fa-solid fa-file-signature"></i>
@@ -78,7 +80,7 @@
     <p class="section-intro" data-i18n="process.intro">
       A clear, step-by-step process designed for your success, with a guarantee.
     </p>
-    
+
     <div class="pricing-steps">
       <div class="pricing-step">
         <span class="step-number" data-i18n="step1.number">Step 1</span>
@@ -86,21 +88,21 @@
         <p class="price">CHF 100</p>
         <p data-i18n="step1.description">We work with you to build a structured narrative of your experience, achievements, and skills.</p>
       </div>
-      
+
       <div class="pricing-step">
         <span class="step-number" data-i18n="step2.number">Step 2</span>
         <h3 data-i18n="step2.title">Apply for Jobs</h3>
         <p class="price">CHF 400</p>
         <p data-i18n="step2.description">Covers up to four custom CV + cover letter packages, optimized for each specific job application.</p>
       </div>
-      
+
       <div class="pricing-step">
         <span class="step-number" data-i18n="step3.number">Step 3</span>
         <h3 data-i18n="step3.title">Guaranteed Interview</h3>
         <p class="price" style="color: var(--accent-green-dark);">Money Back</p>
         <p class="guarantee" data-i18n="step3.description">If none of the four applications lead to an interview, you get a full refund of the CHF 400.</p>
       </div>
-      
+
       <div class="pricing-step">
         <span class="step-number" data-i18n="step4.number">Step 4</span>
         <h3 data-i18n="step4.title">Interview Prep</h3>
@@ -109,13 +111,14 @@
         <p class="disclaimer">*Prep session included for interviews resulting from our applications.</p>
       </div>
     </div>
-    
+
     <div class="actions">
-      <a href="contact" class="btn btn-primary" id="contact-button" data-i18n="contact.button">
+      <a href="{{ url_for('contact.contact') }}" class="btn btn-primary" id="contact-button" data-i18n="contact.button"> {# Use url_for for contact link #}
         <i class="fa-solid fa-envelope"></i>
         <span>Request More Information</span>
       </a>
-      <a href="#" onclick="goToUploadPage(); return false;" class="btn btn-outline" data-i18n="test.button">
+      {# Add data attributes for URLs and remove onclick #}
+      <a href="#" class="btn btn-outline test-system-button" data-i18n="test.button" data-upload-url="{{ upload_url }}" data-login-url="{{ login_url }}">
         <i class="fa-solid fa-vial"></i>
         <span>Test the System (Demo)</span>
       </a>
@@ -130,11 +133,11 @@
     <p class="section-intro" data-i18n="testimonials.intro">
       Don't just take our word for it — hear from professionals who've transformed their job search with The Metric.
     </p>
-    
+
     <div class="testimonial-slider">
       <div class="testimonial-item">
         <p class="testimonial-text" data-i18n="testimonial1.text">
-          "After months of silence from employers, The Metric helped me optimize my CV. Within two weeks, 
+          "After months of silence from employers, The Metric helped me optimize my CV. Within two weeks,
           I had three interview requests. Their systematic approach made all the difference."
         </p>
         <div class="testimonial-author">
@@ -160,18 +163,18 @@
     color: white;
     text-align: center;
   }
-  
+
   .hero-section .page-title {
     margin-top: 0;
   }
-  
+
   .hero-section h1 {
     color: white;
     font-size: 3.5rem;
     margin-bottom: 1rem;
     font-weight: 800;
   }
-  
+
   .hero-section .page-subtitle {
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.5rem;
@@ -180,21 +183,21 @@
     margin-left: auto;
     margin-right: auto;
   }
-  
+
   .bg-pattern {
     background-color: var(--light-color);
     position: relative;
   }
-  
+
   @media (max-width: 768px) {
     .hero-section h1 {
       font-size: 2.5rem;
     }
-    
+
     .hero-section .page-subtitle {
       font-size: 1.25rem;
     }
-    
+
     .pricing-steps {
       grid-template-columns: 1fr;
     }
@@ -214,13 +217,54 @@
       } else {
         btn.classList.remove('active');
       }
-      
+
       btn.addEventListener('click', function() {
         setLang(this.dataset.lang);
       });
     });
+
+    // --- Test System Button Logic ---
+    const testButtons = document.querySelectorAll('.test-system-button'); // Use a class if multiple buttons
+    testButtons.forEach(testButton => {
+        testButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default link behavior
+
+            const uploadUrl = this.dataset.uploadUrl; // Get URL from data attribute
+            const loginUrl = this.dataset.loginUrl;   // Get URL from data attribute
+            const currentLang = localStorage.getItem('lang') || 'en'; // Get latest language preference
+
+            // Check if user is logged in
+            // This needs to reliably detect if the user has an active session cookie.
+            // You might need to adjust this based on how your auth system sets cookies.
+            // Assuming a common cookie like 'session' or 'flask-login' exists when logged in.
+            const isLoggedIn = document.cookie.split(';').some(c => {
+              const trimmed = c.trim();
+              return trimmed.startsWith('session=') || trimmed.startsWith('auth_token=') || trimmed.startsWith('flask-login=');
+            });
+
+            let targetUrl;
+            // Ensure the upload URL includes the language parameter
+            const uploadUrlWithLang = uploadUrl + (uploadUrl.includes('?') ? '&' : '?') + `lang=${currentLang}`;
+
+
+            if (isLoggedIn) {
+              // User is logged in, redirect to upload page
+              targetUrl = uploadUrlWithLang;
+              console.log("DEBUG (JS): User is logged in, redirecting to", targetUrl);
+            } else {
+              // User is not logged in, redirect to login with the upload page as the 'next' parameter
+              const returnUrl = encodeURIComponent(uploadUrlWithLang);
+              targetUrl = `${loginUrl}?next=${returnUrl}`;
+              console.log("DEBUG (JS): User is not logged in, redirecting to login", targetUrl);
+            }
+
+            window.location.href = targetUrl; // Perform the redirect
+        });
+    });
+    // --- End Test System Button Logic ---
+
   });
-  
+
   // Add translations
   if (translations.en) {
     Object.assign(translations.en, {
@@ -256,7 +300,7 @@
       "step4.number": "Step 4",
       "step4.title": "Interview Prep",
       "step4.description": "If you land an interview from our applications, we guide you through expert-led prep sessions.",
-      "book.button": "Book Your Initial Session (CHF 100)",
+      "book.button": "Réserver Votre Session Initiale (CHF 100)", // This looks like French? Fix needed here
       "test.button": "Test the System (Demo)",
       "contact.button": "Request More Information",
       "testimonials.title": "Client Success Stories",
@@ -270,7 +314,7 @@
       "final-cta.secondary": "Try Demo First"
     });
   }
-  
+
   if (translations.fr) {
     Object.assign(translations.fr, {
       "hero.subtitle": "Nous créons des CV qui surpassent les filtres ATS et vous préparons à briller en entretien.",
@@ -320,41 +364,11 @@
     });
   }
 
-  // Navigation function
-  function goToUploadPage() {
-    const currentLang = localStorage.getItem('lang') || 'en';
-    
-    // Check if user is logged in (look for auth cookie or session token)
-    const isLoggedIn = document.cookie.split(';').some(c => {
-      return c.trim().startsWith('session=') || c.trim().startsWith('auth_token=');
-    });
-    
-    // Check if we're on the production server (rametric.com)
-    const isProduction = window.location.hostname.includes('rametric.com');
-    
-    // Set the correct paths based on environment
-    let analysisPath, authPath;
-    
-    if (isProduction) {
-      // On production server, always include /appop/ prefix
-      analysisPath = '/appop/analysis/upload';
-      authPath = '/appop/auth/login';
-    } else {
-      // On local dev, we also need /appop/
-      analysisPath = '/appop/analysis/upload';
-      authPath = '/appop/auth/login';
-    }
-    
-    if (isLoggedIn) {
-      // User is logged in, redirect to upload page directly
-      window.location.href = `${analysisPath}?lang=${currentLang}`;
-      console.log("DEBUG: User is logged in, redirecting to upload page");
-    } else {
-      // User is not logged in, redirect to login with return URL
-      const returnUrl = encodeURIComponent(`${analysisPath}?lang=${currentLang}`);
-      window.location.href = `${authPath}?next=${returnUrl}`;
-      console.log("DEBUG: User is not logged in, redirecting to login page");
-    }
-  }
+  // The goToUploadPage function is no longer needed as we use event listeners on button click.
+  // The button's onclick="goToUploadPage(); return false;" should be removed in the HTML.
+  // The logic is now inside the DOMContentLoaded event listener.
+
 </script>
 {% endblock %}
+
+--- END OF FILE landing_page.html ---
